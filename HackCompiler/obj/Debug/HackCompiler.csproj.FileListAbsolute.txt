@@ -1,0 +1,9 @@
+c:\users\jthomasson\documents\visual studio 2013\Projects\HackCompiler\HackCompiler\bin\Debug\HackCompiler.exe.config
+c:\users\jthomasson\documents\visual studio 2013\Projects\HackCompiler\HackCompiler\bin\Debug\HackCompiler.exe
+c:\users\jthomasson\documents\visual studio 2013\Projects\HackCompiler\HackCompiler\bin\Debug\HackCompiler.pdb
+c:\users\jthomasson\documents\visual studio 2013\Projects\HackCompiler\HackCompiler\obj\Debug\HackCompiler.csprojResolveAssemblyReference.cache
+c:\users\jthomasson\documents\visual studio 2013\Projects\HackCompiler\HackCompiler\obj\Debug\HackCompiler.Form1.resources
+c:\users\jthomasson\documents\visual studio 2013\Projects\HackCompiler\HackCompiler\obj\Debug\HackCompiler.Properties.Resources.resources
+c:\users\jthomasson\documents\visual studio 2013\Projects\HackCompiler\HackCompiler\obj\Debug\HackCompiler.csproj.GenerateResource.Cache
+c:\users\jthomasson\documents\visual studio 2013\Projects\HackCompiler\HackCompiler\obj\Debug\HackCompiler.exe
+c:\users\jthomasson\documents\visual studio 2013\Projects\HackCompiler\HackCompiler\obj\Debug\HackCompiler.pdb
