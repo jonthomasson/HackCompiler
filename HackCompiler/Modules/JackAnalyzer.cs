@@ -17,5 +17,11 @@ namespace HackCompiler.Modules
     /// </summary>
     public class JackAnalyzer
     {
+        public JackAnalyzer()
+        {
+            
+            var tokenizer = new JackTokenizer("asdf");
+
+        }
     }
 }
