@@ -120,7 +120,7 @@ namespace HackCompiler.Modules
         {
            // var tokenBuffer = _tokens[_currentTokenIdx];
             
-            HasMoreTokens = _tokens.Count > _currentTokenIdx ? true : false;
+            HasMoreTokens = _tokens.Count > _currentTokenIdx + 1 ? true : false;
 
             if (HasMoreTokens)
             {
