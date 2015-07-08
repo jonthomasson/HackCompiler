@@ -66,32 +66,69 @@ namespace HackCompiler
                 if (tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
                 {
                     //write xml for identifier
+                    xmlTokens.WriteStartElement("identifier"); //<identifier>
+                    xmlTokens.WriteString(tokenizer.Identifier());
+                    xmlTokens.WriteEndElement();
                 }
                 else if (tokenizer.TokenType == Enums.Enumerations.TokenType.INT_CONST)
                 {
                     //write xml for int constant
+                    xmlTokens.WriteStartElement("integerConstant"); //<integerConstant>
+                    xmlTokens.WriteString(tokenizer.IntVal().ToString());
+                    xmlTokens.WriteEndElement();
                 }
                 else if (tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD)
                 {
                     //write xml for keyword
+                    xmlTokens.WriteStartElement("keyword"); //<keyword>
+                    xmlTokens.WriteString(tokenizer.KeyWord());
+                    xmlTokens.WriteEndElement();
                 }
                 else if (tokenizer.TokenType == Enums.Enumerations.TokenType.STRING_CONST)
                 {
                     //write xml for string constant
+                    xmlTokens.WriteStartElement("stringConstant"); //<stringConstant>
+                    xmlTokens.WriteString(tokenizer.StringVal());
+                    xmlTokens.WriteEndElement();
                 }
                 else if (tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL)
                 {
                     ////write xml for symbol
+                    xmlTokens.WriteStartElement("symbol"); //<stringConstant>
+                    xmlTokens.WriteString(tokenizer.Symbol());
+                    xmlTokens.WriteEndElement();
                 }
             }
 
             xmlTokens.WriteEndElement();//</tokens>
             xmlTokens.Flush();
             stream.Position = 0; //rewind the stream. This will eventually be the input to the CompilationEngine class.
+            string xml = new StreamReader(stream).ReadToEnd();
             //xmlTokens.Close();
             //2. call Parser
-
+            rtbDestination.Text = xml;
+            //xmlTokens.Close();
             //3. call Code Generation
+        }
+
+        private void toolStripButton2_Click(object sender, EventArgs e)
+        {
+            //open save file dialog
+            var savefile = new SaveFileDialog();
+            // set a default file name
+            var fileName = System.IO.Path.GetFileName(_fileName).Replace("jack", "xml");
+            savefile.FileName = fileName;
+
+            // set filters - this can be done in properties as well
+            savefile.Filter = "xml files (*.xml)|*.xml*";
+
+            if (savefile.ShowDialog() == DialogResult.OK)
+            {
+                rtbDestination.SaveFile(savefile.FileName, RichTextBoxStreamType.PlainText);
+
+                lblStatus.Text = "File " + savefile.FileName + " Saved Successfully.";
+                frmStatus.Refresh();
+            }
         }
     }
 }

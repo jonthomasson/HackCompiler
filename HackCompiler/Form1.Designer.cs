@@ -30,6 +30,9 @@
         {
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.mnuTools = new System.Windows.Forms.ToolStrip();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
@@ -37,12 +40,9 @@
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.label2 = new System.Windows.Forms.Label();
             this.rtbDestination = new System.Windows.Forms.RichTextBox();
+            this.btnRun = new System.Windows.Forms.Button();
             this.frmStatus = new System.Windows.Forms.StatusStrip();
             this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
-            this.btnRun = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.mnuTools.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -82,6 +82,36 @@
             this.mnuTools.Size = new System.Drawing.Size(2075, 69);
             this.mnuTools.TabIndex = 0;
             this.mnuTools.Text = "toolStrip1";
+            // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton1.Image = global::HackCompiler.Properties.Resources.folder_open_000000_32;
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(36, 66);
+            this.toolStripButton1.Text = "btnOpenSourceFile";
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
+            // 
+            // toolStripButton2
+            // 
+            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton2.Image = global::HackCompiler.Properties.Resources.save_000000_32;
+            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton2.Name = "toolStripButton2";
+            this.toolStripButton2.Size = new System.Drawing.Size(36, 66);
+            this.toolStripButton2.Text = "btnSaveDestination";
+            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
+            // 
+            // toolStripButton3
+            // 
+            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton3.Image = global::HackCompiler.Properties.Resources.play_000000_32;
+            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton3.Name = "toolStripButton3";
+            this.toolStripButton3.Size = new System.Drawing.Size(36, 66);
+            this.toolStripButton3.Text = "btnRunAssembler";
+            this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
             // 
             // tableLayoutPanel2
             // 
@@ -170,6 +200,16 @@
             this.rtbDestination.TabIndex = 1;
             this.rtbDestination.Text = "";
             // 
+            // btnRun
+            // 
+            this.btnRun.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnRun.Image = global::HackCompiler.Properties.Resources.arrow_right_000000_321;
+            this.btnRun.Location = new System.Drawing.Point(996, 3);
+            this.btnRun.Name = "btnRun";
+            this.btnRun.Size = new System.Drawing.Size(76, 1126);
+            this.btnRun.TabIndex = 2;
+            this.btnRun.UseVisualStyleBackColor = true;
+            // 
             // frmStatus
             // 
             this.frmStatus.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -186,45 +226,6 @@
             // 
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(0, 39);
-            // 
-            // toolStripButton1
-            // 
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton1.Image = global::HackCompiler.Properties.Resources.folder_open_000000_32;
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(36, 66);
-            this.toolStripButton1.Text = "btnOpenSourceFile";
-            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
-            // 
-            // toolStripButton2
-            // 
-            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton2.Image = global::HackCompiler.Properties.Resources.save_000000_32;
-            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(36, 66);
-            this.toolStripButton2.Text = "btnSaveDestination";
-            // 
-            // toolStripButton3
-            // 
-            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton3.Image = global::HackCompiler.Properties.Resources.play_000000_32;
-            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(36, 66);
-            this.toolStripButton3.Text = "btnRunAssembler";
-            this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
-            // 
-            // btnRun
-            // 
-            this.btnRun.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnRun.Image = global::HackCompiler.Properties.Resources.arrow_right_000000_321;
-            this.btnRun.Location = new System.Drawing.Point(996, 3);
-            this.btnRun.Name = "btnRun";
-            this.btnRun.Size = new System.Drawing.Size(76, 1126);
-            this.btnRun.TabIndex = 2;
-            this.btnRun.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 

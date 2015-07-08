@@ -13,10 +13,12 @@ namespace HackCompiler.Modules
     /// </summary>
     public class JackTokenizer
     {
-        private System.IO.StreamReader _sr;
+        
         public string CurrentToken { get; set; }
         public bool HasMoreTokens { get; set; }
         public List<TokenizedObject> _tokens;
+        private int _currentTokenIdx;
+        private TokenizedObject _currentToken;
         public Enumerations.TokenType TokenType { get; set; }
         public string[] Symbols = { "(", ")", "{", "}", "[", "]", ".", ",", ";", "+", "-", "*", "/", "&", "|", "<", ">", "=", "~" };
         public string[] Keywords = { "class", "constructor", "function", "method", "field", "static", "var", "int", "char", "boolean", "void", "true", "false", "null", "this", "let", "do", "if", "else", "while", "return" };
@@ -26,13 +28,12 @@ namespace HackCompiler.Modules
         /// <param name="inputFile">input file stream</param>
         public JackTokenizer(string inputFile)
         {
-            //open the file stream 
-            //_sr = new System.IO.StreamReader(inputFile);
             _tokens = new List<TokenizedObject>();
             //read through file line by line first and put individual tokens into a dictionary
             ParseTokens(inputFile);
 
-            //HasMoreTokens = !_sr.EndOfStream;
+            _currentTokenIdx = 0;
+            HasMoreTokens = _tokens.Count > 0 ? true : false;
         }
 
         
@@ -117,30 +118,18 @@ namespace HackCompiler.Modules
         /// </summary>
         public void Advance()
         {
-            var tokenBuffer = _sr.ReadLine();
-            //CurrentToken = 
+           // var tokenBuffer = _tokens[_currentTokenIdx];
+            
+            HasMoreTokens = _tokens.Count > _currentTokenIdx ? true : false;
 
-            //handle commented lines  and white space
-            if (string.IsNullOrWhiteSpace(tokenBuffer))
+            if (HasMoreTokens)
             {
-                tokenBuffer = "";
+                _currentToken = _tokens[_currentTokenIdx];
+                TokenType = _currentToken.Type;
+                CurrentToken = _currentToken.Token;
+
+                _currentTokenIdx++;
             }
-            bool isComment = tokenBuffer.Contains("//") || tokenBuffer.Contains("/**");
-            while (isComment || string.IsNullOrWhiteSpace(tokenBuffer))
-            {
-                tokenBuffer = _sr.ReadLine();
-                if (string.IsNullOrWhiteSpace(tokenBuffer))
-                {
-                    tokenBuffer = "";
-                }
-                isComment = tokenBuffer.Contains("//") || tokenBuffer.Contains("/**");
-            }
-
-            //determine what type of token we have
-
-
-            HasMoreTokens = !_sr.EndOfStream;
-
         }
 
 
@@ -148,9 +137,9 @@ namespace HackCompiler.Modules
         /// Returns the keyword which is the current token. Should be called only when tokenType() is KEYWORD
         /// </summary>
         /// <returns></returns>
-        public Enumerations.Keyword KeyWord()
+        public string KeyWord()
         {
-            return Enumerations.Keyword.BOOLEAN;
+            return (string)_currentToken.Token;
         }
 
         /// <summary>
@@ -159,7 +148,7 @@ namespace HackCompiler.Modules
         /// <returns></returns>
         public string Symbol()
         {
-            return "";
+            return (string)_currentToken.Token;
         }
 
         /// <summary>
@@ -168,7 +157,7 @@ namespace HackCompiler.Modules
         /// <returns></returns>
         public string Identifier()
         {
-            return "";
+            return (string)_currentToken.Token;
         }
 
         /// <summary>
@@ -177,7 +166,7 @@ namespace HackCompiler.Modules
         /// <returns></returns>
         public int IntVal()
         {
-            return 0;
+            return int.Parse(_currentToken.Token);
         }
 
         /// <summary>
@@ -186,13 +175,10 @@ namespace HackCompiler.Modules
         /// <returns></returns>
         public string StringVal()
         {
-            return "";
+            return (string)_currentToken.Token;
         }
 
-        public void GarbageCollection()
-        {
-            _sr.Close();
-        }
+      
 
     }
     public class TokenizedObject
