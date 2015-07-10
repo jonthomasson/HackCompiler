@@ -16,7 +16,7 @@ namespace HackCompiler.Modules
         
         public string CurrentToken { get; set; }
         public bool HasMoreTokens { get; set; }
-        public List<TokenizedObject> _tokens;
+        private List<TokenizedObject> _tokens;
         private int _currentTokenIdx;
         private TokenizedObject _currentToken;
         public Enumerations.TokenType TokenType { get; set; }
