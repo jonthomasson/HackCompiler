@@ -18,7 +18,9 @@ namespace HackCompiler.Modules
     public class CompilationEngine
     {
         private JackTokenizer _tokenizer;
-        private XmlWriter _xmlTokens;
+        private StringBuilder _xmlTokens;
+       
+        public string Xml { get; set; }
         /// <summary>
         /// Constructor: creates a new compilation engine with the given input and output. The next routine called must be compileClass().
         /// </summary>
@@ -27,11 +29,11 @@ namespace HackCompiler.Modules
         public CompilationEngine(string inputFile, string outputFile)
         {
             //1. call Tokenizer
-            var stream = new MemoryStream();
-            _xmlTokens = XmlWriter.Create(stream);
+
+            _xmlTokens = new StringBuilder();
             _tokenizer = new JackTokenizer(inputFile);
 
-            _xmlTokens.WriteStartElement("tokens"); //<tokens>
+            _xmlTokens.Append("<tokens>"); //<tokens>
 
             //first check for class element
 
@@ -44,15 +46,15 @@ namespace HackCompiler.Modules
             else
             {
                 //error: no class struct
+                _tokenizer.RecordError("expecting class struct");
             }
 
 
-            _xmlTokens.WriteEndElement(); //</tokens>
+            _xmlTokens.Append("</tokens>"); //</tokens>
 
-            _xmlTokens.Flush();
-            stream.Position = 0; //rewind the stream. This will eventually be the input to the CompilationEngine class.
-            string xml = new StreamReader(stream).ReadToEnd();
-          
+            string xml = _xmlTokens.ToString();
+
+            Xml = xml;
         }
 
         /// <summary>
@@ -61,24 +63,27 @@ namespace HackCompiler.Modules
         /// </summary>
         public void CompileClass()
         {
-            _xmlTokens.WriteStartElement("class"); //<class>
-            
+            _xmlTokens.Append("<class>"); //<class>
+            _xmlTokens.Append("<keyword>"); //<keyword>
+            _xmlTokens.Append(_tokenizer.KeyWord());
+            _xmlTokens.Append("</keyword>");//</keyword>
+
             //according to the grammar we should next have a className identifier
             _tokenizer.Advance();
 
             if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
             {
-                _xmlTokens.WriteStartElement("identifier"); //<identifier>
-                _xmlTokens.WriteString(_tokenizer.Identifier()); //className
-                _xmlTokens.WriteEndElement();  //</identifier>
+                _xmlTokens.Append("<identifier>"); //<identifier>
+                _xmlTokens.Append(_tokenizer.Identifier()); //className
+                _xmlTokens.Append("</identifier>");  //</identifier>
 
                 _tokenizer.Advance();
 
                 if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL)
                 {
-                    _xmlTokens.WriteStartElement("symbol"); //<symbol>
-                    _xmlTokens.WriteString(_tokenizer.Symbol()); //{
-                    _xmlTokens.WriteEndElement();  //</identifier>
+                    _xmlTokens.Append("<symbol>"); //<symbol>
+                    _xmlTokens.Append(_tokenizer.Symbol()); //{
+                    _xmlTokens.Append("</symbol>");  //</symbol>
 
                     _tokenizer.Advance(); 
 
@@ -100,19 +105,24 @@ namespace HackCompiler.Modules
                     else
                     {
                         //error: expecting class variable declarations or subroutine declaration
+                        _tokenizer.RecordError("expecting class variable declarations or subroutine declaration");
                     }
                 }
                 else
                 {
                     //error: expecting '{'
+                    _tokenizer.RecordError("expecting '{'");
+
                 }
             }
             else
             {
                 //error: expecting className
+                _tokenizer.RecordError("expecting className");
+
             }
- 
-            _xmlTokens.WriteEndElement(); //</class>
+
+            _xmlTokens.Append("</class>"); //</class>
         }
 
         /// <summary>
@@ -129,50 +139,50 @@ namespace HackCompiler.Modules
         public void CompileSubroutine()
         {
             var subType = _tokenizer.KeyWord();
-            _xmlTokens.WriteStartElement("subroutineDec"); //<subroutineDec>
+            _xmlTokens.Append("<subroutineDec>"); //<subroutineDec>
 
             if (subType == "constructor" || subType == "function" || subType == "method")
             {
-                _xmlTokens.WriteStartElement("keyword"); //<keyword>
-                _xmlTokens.WriteString(subType);
+                _xmlTokens.Append("<keyword>"); //<keyword>
+                _xmlTokens.Append(subType);
 
-                _xmlTokens.WriteEndElement();  //</keyword>
+                _xmlTokens.Append("</keyword>");  //</keyword>
 
                 _tokenizer.Advance();
 
                 if (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD) //should either be 'void' or a type
                 {
-                    _xmlTokens.WriteStartElement("keyword"); //<keyword>
-                    _xmlTokens.WriteString(_tokenizer.KeyWord());
+                    _xmlTokens.Append("<keyword>"); //<keyword>
+                    _xmlTokens.Append(_tokenizer.KeyWord());
 
-                    _xmlTokens.WriteEndElement();  //</keyword>
+                    _xmlTokens.Append("</keyword>");  //</keyword>
 
                     _tokenizer.Advance();
 
                     if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER) //subroutineName
                     {
-                        _xmlTokens.WriteStartElement("identifier"); //<identifier>
-                        _xmlTokens.WriteString(_tokenizer.Identifier());
+                        _xmlTokens.Append("<identifier>"); //<identifier>
+                        _xmlTokens.Append(_tokenizer.Identifier());
 
-                        _xmlTokens.WriteEndElement();  //</identifier>
+                        _xmlTokens.Append("</identifier>");  //</identifier>
 
                         _tokenizer.Advance();
 
                         if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "(")
                         {
-                            _xmlTokens.WriteStartElement("symbol"); //<symbol>
-                            _xmlTokens.WriteString(_tokenizer.Symbol()); //(
+                            _xmlTokens.Append("<symbol>"); //<symbol>
+                            _xmlTokens.Append(_tokenizer.Symbol()); //(
 
-                            _xmlTokens.WriteEndElement();  //</symbol>
+                            _xmlTokens.Append("</symbol>");  //</symbol>
 
                             _tokenizer.Advance();
 
                             CompileParameterList(); //this will handle empty parameterLists as well
 
-                            _xmlTokens.WriteStartElement("symbol"); //<symbol>
-                            _xmlTokens.WriteString(_tokenizer.Symbol()); //)
+                            _xmlTokens.Append("<symbol>"); //<symbol>
+                            _xmlTokens.Append(_tokenizer.Symbol()); //)
 
-                            _xmlTokens.WriteEndElement();  //</symbol>
+                            _xmlTokens.Append("</symbol>");  //</symbol>
 
                             _tokenizer.Advance(); //moving on to the subroutineBody
 
@@ -183,39 +193,43 @@ namespace HackCompiler.Modules
                         else
                         {
                             //error: expected (
+                            _tokenizer.RecordError("expected '('");
                         }
                     }
                     else
                     {
                         //error: expected subroutineName
+                        _tokenizer.RecordError("expected subroutineName");
+
                     }
                 }
                 else
                 {
                     //error: expected 'void' or type
+                    _tokenizer.RecordError("expected 'void' or type");
+
                 }
             }
             else
             {
                 //error: expected (constructor | function | method)
-            }
-            
+                _tokenizer.RecordError("expected (constructor | function | method)");
 
-            
-           
-            _xmlTokens.WriteEndElement();  //</subroutineDec>
+            }
+
+            _xmlTokens.Append("</subroutineDec>");  //</subroutineDec>
         }
 
         public void CompileSubroutineBody()
         {
-            _xmlTokens.WriteStartElement("subroutineBody"); //<subroutineBody>
+            _xmlTokens.Append("subroutineBody"); //<subroutineBody>
 
             if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "{")
             {
-                _xmlTokens.WriteStartElement("symbol"); //<symbol>
-                _xmlTokens.WriteString(_tokenizer.Symbol()); //{
+                _xmlTokens.Append("<symbol>"); //<symbol>
+                _xmlTokens.Append(_tokenizer.Symbol()); //{
 
-                _xmlTokens.WriteEndElement();  //</symbol>
+                _xmlTokens.Append("</symbol>");  //</symbol>
                 
                 //check varDec  
                 _tokenizer.Advance();
@@ -226,26 +240,29 @@ namespace HackCompiler.Modules
                 }
 
                 //now check to see what kind of statements we have in our subroutine...
-
+                CompileStatements();
+               
 
                 if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "}")
                 {
-                    _xmlTokens.WriteStartElement("symbol"); //<symbol>
-                    _xmlTokens.WriteString(_tokenizer.Symbol()); //}
+                    _xmlTokens.Append("<symbol>"); //<symbol>
+                    _xmlTokens.Append(_tokenizer.Symbol()); //}
 
-                    _xmlTokens.WriteEndElement();  //</symbol>
+                    _xmlTokens.Append("</symbol>");  //</symbol>
                 }
                 else
                 {
                     //error: expected }
+                    _tokenizer.RecordError("expected '}'");
                 }
             }
             else
             {
                 //error: expected {
+                _tokenizer.RecordError("expected '{'");
             }
 
-            _xmlTokens.WriteEndElement(); //</subroutineBody>
+            _xmlTokens.Append("</subroutineBody>"); //</subroutineBody>
         }
 
         /// <summary>
@@ -253,7 +270,7 @@ namespace HackCompiler.Modules
         /// </summary>
         public void CompileParameterList()
         {
-            _xmlTokens.WriteStartElement("parameterList");//<parameterList>
+            _xmlTokens.Append("<parameterList>");//<parameterList>
             //check to see if it's an empty parameter list
             if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ")")
             {
@@ -266,9 +283,11 @@ namespace HackCompiler.Modules
             else
             {
                 //error: expected type
+                _tokenizer.RecordError("expected type");
+
             }
 
-            _xmlTokens.WriteEndElement(); //</parameterList>
+            _xmlTokens.Append("</parameterList>"); //</parameterList>
         }
 
         /// <summary>
@@ -276,27 +295,35 @@ namespace HackCompiler.Modules
         /// </summary>
         public void CompileVarDec()
         {
-            _xmlTokens.WriteStartElement("varDec"); //<varDec>
+            _xmlTokens.Append("<varDec>"); //<varDec>
 
-            _xmlTokens.WriteStartElement("keyword"); //<keyword>
-            _xmlTokens.WriteString(_tokenizer.KeyWord()); //var
-            _xmlTokens.WriteEndElement();  //</keyword>
+            _xmlTokens.Append("<keyword>"); //<keyword>
+            _xmlTokens.Append(_tokenizer.KeyWord()); //var
+            _xmlTokens.Append("</keyword>");  //</keyword>
 
-            _xmlTokens.WriteStartElement("identifier"); //<identifier>
-            _xmlTokens.WriteString(_tokenizer.Identifier()); //type
-            _xmlTokens.WriteEndElement();  //</identifier>
+            _tokenizer.Advance();
 
-            _xmlTokens.WriteStartElement("identifier"); //<identifier>
-            _xmlTokens.WriteString(_tokenizer.Identifier()); //varName
-            _xmlTokens.WriteEndElement();  //</identifier>
+            _xmlTokens.Append("<identifier>"); //<identifier>
+            _xmlTokens.Append(_tokenizer.Identifier()); //type
+            _xmlTokens.Append("</identifier>");  //</identifier>
 
-            _xmlTokens.WriteStartElement("symbol"); //<symbol>
-            _xmlTokens.WriteString(_tokenizer.Symbol()); //;
-            _xmlTokens.WriteEndElement();  //</symbol>
+            _tokenizer.Advance();
+
+            _xmlTokens.Append("<identifier>"); //<identifier>
+            _xmlTokens.Append(_tokenizer.Identifier()); //varName
+            _xmlTokens.Append("</identifier>");  //</identifier>
+
+            _tokenizer.Advance();
+
+            _xmlTokens.Append("<symbol>"); //<symbol>
+            _xmlTokens.Append(_tokenizer.Symbol()); //;
+            _xmlTokens.Append("</symbol>");  //</symbol>
 
             //may need to refactor later to allow for multiple var decs here...
 
-            _xmlTokens.WriteEndElement(); //</varDec> 
+            _xmlTokens.Append("</varDec>"); //</varDec> 
+
+            _tokenizer.Advance(); //following lookahead procedure to stay consistent here...
         }
 
         /// <summary>
@@ -304,6 +331,35 @@ namespace HackCompiler.Modules
         /// </summary>
         public void CompileStatements()
         {
+            _xmlTokens.Append("<statements>"); //<statements>
+
+            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD)
+            {
+                var statementType = _tokenizer.KeyWord();
+
+                if (statementType == "let")
+                {
+                    CompileLet();
+                }
+                else if (statementType == "if")
+                {
+                    CompileIf();
+                }
+                else if (statementType == "while")
+                {
+                    CompileWhile();
+                }
+                else if (statementType == "do")
+                {
+                    CompileDo();
+                }
+                else if (statementType == "return")
+                {
+                    CompileReturn();
+                }
+            }
+
+            _xmlTokens.Append("</statements>"); //</statements>
 
         }
 

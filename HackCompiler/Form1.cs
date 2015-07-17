@@ -35,6 +35,10 @@ namespace HackCompiler
                 lblStatus.Text = "File Loaded Successfully: " + _fileName;
                 
                 frmStatus.Refresh();
+
+                var sourceFile = System.IO.File.ReadAllText(_fileName);
+
+                rtbSource.Text = sourceFile;
             }
         }
 
@@ -52,6 +56,10 @@ namespace HackCompiler
             //the CompilationEngine will then take care of creating the JackTokenizer and compiling the given class
 
             var compileEngine = new CompilationEngine(_fileName, _fileName.Replace(".jack", ".xml"));
+
+            rtbDestination.Text = compileEngine.Xml ;
+
+            
             ////1. call Tokenizer
             //var stream = new MemoryStream();
             //var xmlTokens = XmlWriter.Create(stream);

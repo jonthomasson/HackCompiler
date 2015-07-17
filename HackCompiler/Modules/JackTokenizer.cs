@@ -17,7 +17,10 @@ namespace HackCompiler.Modules
         public string CurrentToken { get; set; }
         public bool HasMoreTokens { get; set; }
         private List<TokenizedObject> _tokens;
+        public bool HasErrors { get; set; }
         private int _currentTokenIdx;
+        private int _lineNo = 0;
+        private int _charNo = 0;
         private TokenizedObject _currentToken;
         public Enumerations.TokenType TokenType { get; set; }
         public string[] Symbols = { "(", ")", "{", "}", "[", "]", ".", ",", ";", "+", "-", "*", "/", "&", "|", "<", ">", "=", "~" };
@@ -31,9 +34,11 @@ namespace HackCompiler.Modules
             _tokens = new List<TokenizedObject>();
             //read through file line by line first and put individual tokens into a dictionary
             ParseTokens(inputFile);
-
+            _lineNo = 0;
             _currentTokenIdx = 0;
+            _charNo = 0;
             HasMoreTokens = _tokens.Count > 0 ? true : false;
+            HasErrors = false;
         }
 
         
@@ -42,16 +47,18 @@ namespace HackCompiler.Modules
         {
             var sr = new System.IO.StreamReader(inputFile);
             var line = "";
-            //int buff;
+            
             var buff = "";
             var isStringConstant = false;
 
             while ((line = sr.ReadLine()) != null)
             {
+                _lineNo++; //increment our line number
                 if (!line.StartsWith("/") && line != "")//skip comments and blank lines
                 {
                     foreach (var part in line)
                     {
+                        _charNo++;
                         if ((string.IsNullOrWhiteSpace(part.ToString()) || Symbols.Contains(part.ToString())) && !isStringConstant)
                         {
                             //if it is a symbol or space, then need to write out our buffer to a tokenizedObject and clear the buffer
@@ -85,28 +92,34 @@ namespace HackCompiler.Modules
 
         }
 
+        public void RecordError(string error)
+        {
+            _currentToken.Error = error;
+            HasErrors = true;
+        }
+
         public void ProcessToken(string token)
         {
             int buff;
             if (Symbols.Contains(token))
             {
-                _tokens.Add(new TokenizedObject { Token = token, Type = Enumerations.TokenType.SYMBOL });
+                _tokens.Add(new TokenizedObject { Token = token, Type = Enumerations.TokenType.SYMBOL , CharNo = _charNo, LineNo = _lineNo});
             }
             else if (Keywords.Contains(token))
             {
-                _tokens.Add(new TokenizedObject { Token = token, Type = Enumerations.TokenType.KEYWORD });
+                _tokens.Add(new TokenizedObject { Token = token, Type = Enumerations.TokenType.KEYWORD, CharNo = _charNo, LineNo = _lineNo });
             }
             else if (int.TryParse(token, out buff))
             {
-                _tokens.Add(new TokenizedObject { Token = token, Type = Enumerations.TokenType.INT_CONST });
+                _tokens.Add(new TokenizedObject { Token = token, Type = Enumerations.TokenType.INT_CONST, CharNo = _charNo, LineNo = _lineNo });
             }
             else if (token.StartsWith("\""))
             {
-                _tokens.Add(new TokenizedObject { Token = token.Replace("\"", ""), Type = Enumerations.TokenType.STRING_CONST });
+                _tokens.Add(new TokenizedObject { Token = token.Replace("\"", ""), Type = Enumerations.TokenType.STRING_CONST, CharNo = _charNo, LineNo = _lineNo });
             }
             else
             {
-                _tokens.Add(new TokenizedObject { Token = token, Type = Enumerations.TokenType.IDENTIFIER });
+                _tokens.Add(new TokenizedObject { Token = token, Type = Enumerations.TokenType.IDENTIFIER, CharNo = _charNo, LineNo = _lineNo });
             }
         }
 
@@ -185,6 +198,8 @@ namespace HackCompiler.Modules
     {
         public Enumerations.TokenType Type { get; set; }
         public dynamic Token { get; set; }
-
+        public int LineNo { get; set; }
+        public int CharNo { get; set; }
+        public string Error { get; set; }
     }
 }
