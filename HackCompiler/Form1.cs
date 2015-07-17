@@ -36,14 +36,21 @@ namespace HackCompiler
                 
                 frmStatus.Refresh();
 
-                var sourceFile = System.IO.File.ReadAllText(_fileName);
-
-                rtbSource.Text = sourceFile;
+                ReadSourceFile();
             }
+        }
+
+        private void ReadSourceFile()
+        {
+            var sourceFile = System.IO.File.ReadAllText(_fileName);
+
+            rtbSource.Text = sourceFile;
         }
 
         private void toolStripButton3_Click(object sender, EventArgs e)
         {
+            ReadSourceFile();
+
             AnalyzeFile();
         }
 
