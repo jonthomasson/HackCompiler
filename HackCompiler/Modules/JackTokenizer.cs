@@ -17,6 +17,10 @@ namespace HackCompiler.Modules
         public string CurrentToken { get; set; }
         public bool HasMoreTokens { get; set; }
         private List<TokenizedObject> _tokens;
+        public List<TokenizedObject> Tokens
+        {
+            get { return _tokens; }
+        }
         public bool HasErrors { get; set; }
         private int _currentTokenIdx;
         private int _lineNo = 0;
@@ -54,7 +58,8 @@ namespace HackCompiler.Modules
             while ((line = sr.ReadLine()) != null)
             {
                 _lineNo++; //increment our line number
-                if (!line.StartsWith("/") && line != "")//skip comments and blank lines
+                _charNo = 0; //set charno = 0 for current line
+                if (!line.TrimStart().StartsWith("/") && !string.IsNullOrWhiteSpace(line) && !line.TrimStart().StartsWith("*"))//skip comments and blank lines
                 {
                     foreach (var part in line)
                     {

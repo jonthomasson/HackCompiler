@@ -59,68 +59,51 @@ namespace HackCompiler
 
             rtbDestination.Text = compileEngine.Xml ;
 
-            
-            ////1. call Tokenizer
-            //var stream = new MemoryStream();
-            //var xmlTokens = XmlWriter.Create(stream);
-            //var tokenizer = new JackTokenizer(_fileName);
+            //check for errors
+            if (compileEngine.HasErrors)
+            {
+                var errorTokens = from t in compileEngine.Tokens
+                                  where !string.IsNullOrEmpty(t.Error)
+                                  select t;
 
-            //xmlTokens.WriteStartElement("tokens"); //<tokens>
-            //while (tokenizer.HasMoreTokens)
-            //{
-            //    tokenizer.Advance();
+                foreach (var error in errorTokens)
+                {
+                    //Select the line from it's number
+                    var errorLine = error.LineNo - 1;
 
-            //    var sbuilder = new StringBuilder(); //used to hold our output
+                    var startIndex = rtbSource.GetFirstCharIndexFromLine(errorLine) + error.CharNo;
 
-            //    lblStatus.Text = "Tokenizing Line: " + sbuilder.Length;
-            //    frmStatus.Refresh();
+                    var currentChar = rtbSource.GetCharFromPosition(rtbSource.GetPositionFromCharIndex(startIndex)).ToString();
+                    var length = 0;
+                    var currentIndex = startIndex;
+                    while(currentChar != "\n"){
+                        currentIndex++;
+                        length++;
+                        currentChar = rtbSource.GetCharFromPosition(rtbSource.GetPositionFromCharIndex(currentIndex)).ToString();
+                    }
 
-            //    if (tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
-            //    {
-            //        //write xml for identifier
-            //        xmlTokens.WriteStartElement("identifier"); //<identifier>
-            //        xmlTokens.WriteString(tokenizer.Identifier());
-            //        xmlTokens.WriteEndElement();
-            //    }
-            //    else if (tokenizer.TokenType == Enums.Enumerations.TokenType.INT_CONST)
-            //    {
-            //        //write xml for int constant
-            //        xmlTokens.WriteStartElement("integerConstant"); //<integerConstant>
-            //        xmlTokens.WriteString(tokenizer.IntVal().ToString());
-            //        xmlTokens.WriteEndElement();
-            //    }
-            //    else if (tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD)
-            //    {
-            //        //write xml for keyword
-            //        xmlTokens.WriteStartElement("keyword"); //<keyword>
-            //        xmlTokens.WriteString(tokenizer.KeyWord());
-            //        xmlTokens.WriteEndElement();
-            //    }
-            //    else if (tokenizer.TokenType == Enums.Enumerations.TokenType.STRING_CONST)
-            //    {
-            //        //write xml for string constant
-            //        xmlTokens.WriteStartElement("stringConstant"); //<stringConstant>
-            //        xmlTokens.WriteString(tokenizer.StringVal());
-            //        xmlTokens.WriteEndElement();
-            //    }
-            //    else if (tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL)
-            //    {
-            //        ////write xml for symbol
-            //        xmlTokens.WriteStartElement("symbol"); //<stringConstant>
-            //        xmlTokens.WriteString(tokenizer.Symbol());
-            //        xmlTokens.WriteEndElement();
-            //    }
-            //}
+                    rtbSource.Select(rtbSource.GetFirstCharIndexFromLine(errorLine), currentIndex - rtbSource.GetFirstCharIndexFromLine(errorLine));
+                    rtbSource.SelectedText += " error: " + error.Error;
 
-            //xmlTokens.WriteEndElement();//</tokens>
-            //xmlTokens.Flush();
-            //stream.Position = 0; //rewind the stream. This will eventually be the input to the CompilationEngine class.
-            //string xml = new StreamReader(stream).ReadToEnd();
-            ////xmlTokens.Close();
-            ////2. call Parser
-            //rtbDestination.Text = xml;
-            ////xmlTokens.Close();
-            ////3. call Code Generation
+                    rtbSource.Select(startIndex, 1);
+
+                    //Set the selected text fore and background color
+                    rtbSource.SelectionColor = System.Drawing.Color.Black;
+                    rtbSource.SelectionBackColor = System.Drawing.Color.Red;
+
+                    rtbSource.Select(currentIndex, error.Error.Length + 8);
+
+                    //Set the selected text fore and background color
+                    rtbSource.SelectionColor = System.Drawing.Color.Black;
+                    rtbSource.SelectionBackColor = System.Drawing.Color.Orange;
+
+                    rtbSource.DeselectAll();
+                }
+
+                lblStatus.Text = "Compilation failed! Error count = " + errorTokens.Count() + ";  line: " + errorTokens.First().LineNo + "; char: " + errorTokens.First().CharNo + "; Error Message: " + errorTokens.First().Error ;
+                frmStatus.Refresh();
+            }
+
         }
 
         private void toolStripButton2_Click(object sender, EventArgs e)
