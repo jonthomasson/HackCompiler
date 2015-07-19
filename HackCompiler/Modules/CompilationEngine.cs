@@ -80,26 +80,20 @@ namespace HackCompiler.Modules
         public void CompileClass()
         {
             WriteXml("<class>"); //<class>
-            WriteXml("<keyword>"); //<keyword>
-            WriteXml(_tokenizer.KeyWord());
-            WriteXml("</keyword>");//</keyword>
+            WriteCurrentToken();
 
             //according to the grammar we should next have a className identifier
             _tokenizer.Advance();
 
             if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
             {
-                WriteXml("<identifier>"); //<identifier>
-                WriteXml(_tokenizer.Identifier()); //className
-                WriteXml("</identifier>");  //</identifier>
+                WriteCurrentToken();
 
                 _tokenizer.Advance();
 
                 if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL)
                 {
-                    WriteXml("<symbol>"); //<symbol>
-                    WriteXml(_tokenizer.Symbol()); //{
-                    WriteXml("</symbol>");  //</symbol>
+                    WriteCurrentToken();
 
                     _tokenizer.Advance();
 
@@ -144,9 +138,7 @@ namespace HackCompiler.Modules
 
                 if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "}")
                 {
-                    WriteXml("<symbol>"); //<symbol>
-                    WriteXml(_tokenizer.Symbol()); //{
-                    WriteXml("</symbol>");  //</symbol>
+                    WriteCurrentToken();
                 }
                 else
                 {
@@ -156,6 +148,41 @@ namespace HackCompiler.Modules
             }
 
             WriteXml("</class>"); //</class>
+        }
+
+        private void WriteCurrentToken()
+        {
+            switch (_tokenizer.TokenType)
+            {
+                case Enums.Enumerations.TokenType.SYMBOL:
+                    WriteXml("<symbol>"); //<symbol>
+                    WriteXml(_tokenizer.Symbol()); //{
+                    WriteXml("</symbol>");  //</symbol>
+                    break;
+                case Enums.Enumerations.TokenType.KEYWORD:
+                    WriteXml("<keyword>"); //<keyword>
+                    WriteXml(_tokenizer.KeyWord()); //{
+                    WriteXml("</keyword>");  //</keyword>
+                    break;
+                case Enums.Enumerations.TokenType.IDENTIFIER:
+                    WriteXml("<identifier>"); //<identifier>
+                    WriteXml(_tokenizer.Identifier()); //{
+                    WriteXml("</identifier>");  //</identifier>
+                    break;
+                case Enums.Enumerations.TokenType.INT_CONST:
+                    WriteXml("<integerConstant>"); //<integerConstant>
+                    WriteXml(_tokenizer.IntVal().ToString()); //{
+                    WriteXml("</integerConstant>");  //</integerConstant>
+                    break;
+                case Enums.Enumerations.TokenType.STRING_CONST:
+                    WriteXml("<stringConstant>"); //<stringConstant>
+                    WriteXml(_tokenizer.StringVal()); //{
+                    WriteXml("</stringConstant>");  //</stringConstant>
+                    break;
+                default:
+                    _tokenizer.RecordError("unknown token type");
+                    break;
+            }
         }
 
         /// <summary>
@@ -176,46 +203,31 @@ namespace HackCompiler.Modules
 
             if (subType == "constructor" || subType == "function" || subType == "method")
             {
-                WriteXml("<keyword>"); //<keyword>
-                WriteXml(subType);
-
-                WriteXml("</keyword>");  //</keyword>
+                WriteCurrentToken();
 
                 _tokenizer.Advance();
 
                 if (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD) //should either be 'void' or a type
                 {
-                    WriteXml("<keyword>"); //<keyword>
-                    WriteXml(_tokenizer.KeyWord());
-
-                    WriteXml("</keyword>");  //</keyword>
+                    WriteCurrentToken();
 
                     _tokenizer.Advance();
 
                     if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER) //subroutineName
                     {
-                        WriteXml("<identifier>"); //<identifier>
-                        WriteXml(_tokenizer.Identifier());
-
-                        WriteXml("</identifier>");  //</identifier>
+                        WriteCurrentToken();
 
                         _tokenizer.Advance();
 
                         if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "(")
                         {
-                            WriteXml("<symbol>"); //<symbol>
-                            WriteXml(_tokenizer.Symbol()); //(
-
-                            WriteXml("</symbol>");  //</symbol>
+                            WriteCurrentToken();
 
                             _tokenizer.Advance();
 
                             CompileParameterList(); //this will handle empty parameterLists as well
 
-                            WriteXml("<symbol>"); //<symbol>
-                            WriteXml(_tokenizer.Symbol()); //)
-
-                            WriteXml("</symbol>");  //</symbol>
+                            WriteCurrentToken();
 
                             _tokenizer.Advance(); //moving on to the subroutineBody
 
@@ -259,10 +271,7 @@ namespace HackCompiler.Modules
 
             if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "{")
             {
-                WriteXml("<symbol>"); //<symbol>
-                WriteXml(_tokenizer.Symbol()); //{
-
-                WriteXml("</symbol>");  //</symbol>
+                WriteCurrentToken();
 
                 //check varDec  
                 _tokenizer.Advance();
@@ -278,10 +287,7 @@ namespace HackCompiler.Modules
 
                 if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "}")
                 {
-                    WriteXml("<symbol>"); //<symbol>
-                    WriteXml(_tokenizer.Symbol()); //}
-
-                    WriteXml("</symbol>");  //</symbol>
+                    WriteCurrentToken();
                 }
                 else
                 {
@@ -330,27 +336,19 @@ namespace HackCompiler.Modules
         {
             WriteXml("<varDec>"); //<varDec>
 
-            WriteXml("<keyword>"); //<keyword>
-            WriteXml(_tokenizer.KeyWord()); //var
-            WriteXml("</keyword>");  //</keyword>
+            WriteCurrentToken();
 
             _tokenizer.Advance();
 
-            WriteXml("<identifier>"); //<identifier>
-            WriteXml(_tokenizer.Identifier()); //type
-            WriteXml("</identifier>");  //</identifier>
+            WriteCurrentToken();
 
             _tokenizer.Advance();
 
-            WriteXml("<identifier>"); //<identifier>
-            WriteXml(_tokenizer.Identifier()); //varName
-            WriteXml("</identifier>");  //</identifier>
+            WriteCurrentToken();
 
             _tokenizer.Advance();
 
-            WriteXml("<symbol>"); //<symbol>
-            WriteXml(_tokenizer.Symbol()); //;
-            WriteXml("</symbol>");  //</symbol>
+            WriteCurrentToken();
 
             //may need to refactor later to allow for multiple var decs here...
 
@@ -406,9 +404,7 @@ namespace HackCompiler.Modules
         {
             WriteXml("<doStatement>");
 
-            WriteXml("<keyword>");
-            WriteXml(_tokenizer.KeyWord());
-            WriteXml("</keyword>");
+            WriteCurrentToken();
 
             _tokenizer.Advance();
 
@@ -416,9 +412,7 @@ namespace HackCompiler.Modules
 
             if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ";")
             {
-                WriteXml("<symbol>");
-                WriteXml(_tokenizer.Symbol());
-                WriteXml("</symbol>");
+                WriteCurrentToken();
 
                 _tokenizer.Advance(); //look ahead token
             }
@@ -435,9 +429,7 @@ namespace HackCompiler.Modules
         {
             if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
             {
-                WriteXml("<identifier>");
-                WriteXml(_tokenizer.Identifier());
-                WriteXml("</identifier>");
+                WriteCurrentToken();
 
                 _tokenizer.Advance();
 
@@ -447,9 +439,7 @@ namespace HackCompiler.Modules
 
                     if (symbol == "(")
                     {
-                        WriteXml("<symbol>");
-                        WriteXml(_tokenizer.Symbol());
-                        WriteXml("</symbol>");
+                        WriteCurrentToken();
 
                         //expressionList
 
@@ -457,9 +447,7 @@ namespace HackCompiler.Modules
 
                         if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ")")
                         {
-                            WriteXml("<symbol>");
-                            WriteXml(_tokenizer.Symbol());
-                            WriteXml("</symbol>");
+                            WriteCurrentToken();
                         }
                         else
                         {
@@ -469,25 +457,19 @@ namespace HackCompiler.Modules
                     }
                     else if (symbol == ".")
                     {
-                        WriteXml("<symbol>");
-                        WriteXml(_tokenizer.Symbol());
-                        WriteXml("</symbol>");
+                        WriteCurrentToken();
 
                         _tokenizer.Advance();
 
                         if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
                         {
-                            WriteXml("<identifier>");
-                            WriteXml(_tokenizer.Identifier());
-                            WriteXml("</identifier>");
+                            WriteCurrentToken();
 
                             _tokenizer.Advance();
 
                             if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "(")
                             {
-                                WriteXml("<symbol>");
-                                WriteXml(_tokenizer.Symbol());
-                                WriteXml("</symbol>");
+                                WriteCurrentToken();
 
                                 //expressionList
 
@@ -495,9 +477,7 @@ namespace HackCompiler.Modules
 
                                 if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ")")
                                 {
-                                    WriteXml("<symbol>");
-                                    WriteXml(_tokenizer.Symbol());
-                                    WriteXml("</symbol>");
+                                    WriteCurrentToken();
 
                                     _tokenizer.Advance(); //look ahead
                                 }
@@ -537,25 +517,19 @@ namespace HackCompiler.Modules
         {
             WriteXml("<letStatement>");
 
-            WriteXml("<keyword>");
-            WriteXml(_tokenizer.KeyWord());
-            WriteXml("</keyword>");
+            WriteCurrentToken();
 
             _tokenizer.Advance();
 
             if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
             {
-                WriteXml("<identifier>");
-                WriteXml(_tokenizer.Identifier());
-                WriteXml("</identifier>");
+                WriteCurrentToken();
 
                 _tokenizer.Advance();
 
                 if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL)
                 {
-                    WriteXml("<symbol>");
-                    WriteXml(_tokenizer.Symbol());
-                    WriteXml("</symbol>");
+                    WriteCurrentToken();
 
                     _tokenizer.Advance();
 
@@ -564,9 +538,7 @@ namespace HackCompiler.Modules
 
                     if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ";")
                     {
-                        WriteXml("<symbol>");
-                        WriteXml(_tokenizer.Symbol());
-                        WriteXml("</symbol>");
+                        WriteCurrentToken();
 
                         _tokenizer.Advance(); //here's a look ahead token
                     }
@@ -604,17 +576,13 @@ namespace HackCompiler.Modules
         {
             WriteXml("<returnStatement>");
 
-            WriteXml("<keyword>");
-            WriteXml(_tokenizer.KeyWord());
-            WriteXml("</keyword>");
+            WriteCurrentToken();
 
             _tokenizer.Advance();
 
             if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ";")
             {
-                WriteXml("<symbol>");
-                WriteXml(_tokenizer.Symbol());
-                WriteXml("</symbol>");
+                WriteCurrentToken();
 
                 _tokenizer.Advance(); //look ahead
             }
@@ -662,9 +630,7 @@ namespace HackCompiler.Modules
             WriteXml("<term>");
             if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
             {
-                WriteXml("<identifier>");
-                WriteXml(_tokenizer.Identifier());
-                WriteXml("</identifier>");
+                WriteCurrentToken();
             }
             WriteXml("</term>");
         }
