@@ -19,13 +19,17 @@ namespace HackCompiler.Modules
     {
         private JackTokenizer _tokenizer;
         private StringBuilder _xmlTokens;
-        public bool HasErrors {
+        private string[] statements = { "let", "if", "while", "do", "return" };
+
+        public bool HasErrors
+        {
             get { return _tokenizer.HasErrors; }
         }
-        public List<TokenizedObject> Tokens {
+        public List<TokenizedObject> Tokens
+        {
             get { return _tokenizer.Tokens; }
         }
-       
+
         public string Xml { get; set; }
         /// <summary>
         /// Constructor: creates a new compilation engine with the given input and output. The next routine called must be compileClass().
@@ -39,7 +43,7 @@ namespace HackCompiler.Modules
             _xmlTokens = new StringBuilder();
             _tokenizer = new JackTokenizer(inputFile);
 
-            WriteXml("<tokens>"); //<tokens>
+            //WriteXml("<tokens>"); //<tokens>
 
             //first check for class element
 
@@ -56,16 +60,17 @@ namespace HackCompiler.Modules
             }
 
 
-            WriteXml("</tokens>"); //</tokens>
+            //WriteXml("</tokens>"); //</tokens>
 
             string xml = _xmlTokens.ToString();
 
             Xml = xml;
         }
 
-        private void WriteXml(string writeThis){
+        private void WriteXml(string writeThis)
+        {
             _xmlTokens.Append(writeThis + Environment.NewLine);
-      
+
         }
 
         /// <summary>
@@ -96,7 +101,7 @@ namespace HackCompiler.Modules
                     WriteXml(_tokenizer.Symbol()); //{
                     WriteXml("</symbol>");  //</symbol>
 
-                    _tokenizer.Advance(); 
+                    _tokenizer.Advance();
 
                     //now we determine if we have class variable declarations or subroutine declaration
                     if (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD)
@@ -131,6 +136,23 @@ namespace HackCompiler.Modules
                 //error: expecting className
                 _tokenizer.RecordError("expecting className");
 
+            }
+
+            if (_tokenizer.HasMoreTokens)
+            {
+                _tokenizer.Advance();
+
+                if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "}")
+                {
+                    WriteXml("<symbol>"); //<symbol>
+                    WriteXml(_tokenizer.Symbol()); //{
+                    WriteXml("</symbol>");  //</symbol>
+                }
+                else
+                {
+                    _tokenizer.RecordError("expecting '}'");
+
+                }
             }
 
             WriteXml("</class>"); //</class>
@@ -199,7 +221,7 @@ namespace HackCompiler.Modules
 
                             CompileSubroutineBody();
 
-                          
+
                         }
                         else
                         {
@@ -233,7 +255,7 @@ namespace HackCompiler.Modules
 
         public void CompileSubroutineBody()
         {
-            WriteXml("subroutineBody"); //<subroutineBody>
+            WriteXml("<subroutineBody>"); //<subroutineBody>
 
             if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "{")
             {
@@ -241,7 +263,7 @@ namespace HackCompiler.Modules
                 WriteXml(_tokenizer.Symbol()); //{
 
                 WriteXml("</symbol>");  //</symbol>
-                
+
                 //check varDec  
                 _tokenizer.Advance();
 
@@ -252,7 +274,7 @@ namespace HackCompiler.Modules
 
                 //now check to see what kind of statements we have in our subroutine...
                 CompileStatements();
-               
+
 
                 if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "}")
                 {
@@ -344,7 +366,7 @@ namespace HackCompiler.Modules
         {
             WriteXml("<statements>"); //<statements>
 
-            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD)
+            while (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD && statements.Contains(_tokenizer.KeyWord()) && _tokenizer.HasErrors == false)
             {
                 var statementType = _tokenizer.KeyWord();
 
@@ -369,6 +391,7 @@ namespace HackCompiler.Modules
                     CompileReturn();
                 }
             }
+           
 
             WriteXml("</statements>"); //</statements>
 
@@ -376,18 +399,194 @@ namespace HackCompiler.Modules
 
         /// <summary>
         /// Compiles a do statement.
+        /// Grammar:
+        /// 'do' subroutineCall ';'
         /// </summary>
         public void CompileDo()
         {
+            WriteXml("<doStatement>");
 
+            WriteXml("<keyword>");
+            WriteXml(_tokenizer.KeyWord());
+            WriteXml("</keyword>");
+
+            _tokenizer.Advance();
+
+            CompileSubroutineCall();
+
+            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ";")
+            {
+                WriteXml("<symbol>");
+                WriteXml(_tokenizer.Symbol());
+                WriteXml("</symbol>");
+
+                _tokenizer.Advance(); //look ahead token
+            }
+            else
+            {
+                _tokenizer.RecordError("expected: ';'");
+            }
+
+            WriteXml("</doStatement>");
+
+        }
+
+        private void CompileSubroutineCall()
+        {
+            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
+            {
+                WriteXml("<identifier>");
+                WriteXml(_tokenizer.Identifier());
+                WriteXml("</identifier>");
+
+                _tokenizer.Advance();
+
+                if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL)
+                {
+                    var symbol = _tokenizer.Symbol();
+
+                    if (symbol == "(")
+                    {
+                        WriteXml("<symbol>");
+                        WriteXml(_tokenizer.Symbol());
+                        WriteXml("</symbol>");
+
+                        //expressionList
+
+                        CompileExpressionList();
+
+                        if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ")")
+                        {
+                            WriteXml("<symbol>");
+                            WriteXml(_tokenizer.Symbol());
+                            WriteXml("</symbol>");
+                        }
+                        else
+                        {
+                            _tokenizer.RecordError("expected: ')'");
+                        }
+
+                    }
+                    else if (symbol == ".")
+                    {
+                        WriteXml("<symbol>");
+                        WriteXml(_tokenizer.Symbol());
+                        WriteXml("</symbol>");
+
+                        _tokenizer.Advance();
+
+                        if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
+                        {
+                            WriteXml("<identifier>");
+                            WriteXml(_tokenizer.Identifier());
+                            WriteXml("</identifier>");
+
+                            _tokenizer.Advance();
+
+                            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "(")
+                            {
+                                WriteXml("<symbol>");
+                                WriteXml(_tokenizer.Symbol());
+                                WriteXml("</symbol>");
+
+                                //expressionList
+
+                                CompileExpressionList();
+
+                                if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ")")
+                                {
+                                    WriteXml("<symbol>");
+                                    WriteXml(_tokenizer.Symbol());
+                                    WriteXml("</symbol>");
+
+                                    _tokenizer.Advance(); //look ahead
+                                }
+                                else
+                                {
+                                    _tokenizer.RecordError("expected: ')'");
+                                }
+                            }
+                            else
+                            {
+                                _tokenizer.RecordError("expected: '('");
+                            }
+                        }
+                        else
+                        {
+                            _tokenizer.RecordError("expected: identifier");
+                        }
+                    }
+                    else
+                    {
+                        _tokenizer.RecordError("expected: '(' or '.'");
+                    }
+                }
+            }
+            else
+            {
+                _tokenizer.RecordError("expected: subroutineName, className, or varName");
+            }
         }
 
         /// <summary>
         /// Compiles a let statement.
+        /// grammar:
+        /// 'let' varName('[' expression ']')? '=' expression ';'
         /// </summary>
         public void CompileLet()
         {
+            WriteXml("<letStatement>");
 
+            WriteXml("<keyword>");
+            WriteXml(_tokenizer.KeyWord());
+            WriteXml("</keyword>");
+
+            _tokenizer.Advance();
+
+            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
+            {
+                WriteXml("<identifier>");
+                WriteXml(_tokenizer.Identifier());
+                WriteXml("</identifier>");
+
+                _tokenizer.Advance();
+
+                if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL)
+                {
+                    WriteXml("<symbol>");
+                    WriteXml(_tokenizer.Symbol());
+                    WriteXml("</symbol>");
+
+                    _tokenizer.Advance();
+
+                    //expression
+                    CompileExpression();
+
+                    if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ";")
+                    {
+                        WriteXml("<symbol>");
+                        WriteXml(_tokenizer.Symbol());
+                        WriteXml("</symbol>");
+
+                        _tokenizer.Advance(); //here's a look ahead token
+                    }
+                    else
+                    {
+                        _tokenizer.RecordError("expected: ;");
+                    }
+                }
+                else
+                {
+                    _tokenizer.RecordError("expected: ('[' expression ']')? '=' expression ';'");
+
+                }
+            }
+            else
+            {
+                _tokenizer.RecordError("expected: 'let' varName");
+            }
+
+            WriteXml("</letStatement>");
         }
 
         /// <summary>
@@ -403,7 +602,28 @@ namespace HackCompiler.Modules
         /// </summary>
         public void CompileReturn()
         {
+            WriteXml("<returnStatement>");
 
+            WriteXml("<keyword>");
+            WriteXml(_tokenizer.KeyWord());
+            WriteXml("</keyword>");
+
+            _tokenizer.Advance();
+
+            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ";")
+            {
+                WriteXml("<symbol>");
+                WriteXml(_tokenizer.Symbol());
+                WriteXml("</symbol>");
+
+                _tokenizer.Advance(); //look ahead
+            }
+            else
+            {
+                CompileExpression();
+            }
+
+            WriteXml("</returnStatement>");
         }
 
         /// <summary>
@@ -419,7 +639,16 @@ namespace HackCompiler.Modules
         /// </summary>
         public void CompileExpression()
         {
+            WriteXml("<expression>");
+            CompileTerm();
 
+            _tokenizer.Advance();
+            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL)
+            {
+                //(op term)*
+
+            }
+            WriteXml("</expression>");
         }
 
         /// <summary>
@@ -430,7 +659,14 @@ namespace HackCompiler.Modules
         /// </summary>
         public void CompileTerm()
         {
-
+            WriteXml("<term>");
+            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
+            {
+                WriteXml("<identifier>");
+                WriteXml(_tokenizer.Identifier());
+                WriteXml("</identifier>");
+            }
+            WriteXml("</term>");
         }
 
         /// <summary>
@@ -438,6 +674,10 @@ namespace HackCompiler.Modules
         /// </summary>
         public void CompileExpressionList()
         {
+            WriteXml("<expressionList>");
+
+            _tokenizer.Advance();
+            WriteXml("</expressionList>");
 
         }
 
