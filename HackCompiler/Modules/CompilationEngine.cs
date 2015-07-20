@@ -275,13 +275,13 @@ namespace HackCompiler.Modules
             var subType = _tokenizer.KeyWord();
             WriteXml("<subroutineDec>"); //<subroutineDec>
 
-            if (subType == "constructor" || subType == "function" || subType == "method")
+            if (subTypes.Contains(subType))
             {
                 WriteCurrentToken();
 
                 _tokenizer.Advance();
 
-                if (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD) //should either be 'void' or a type
+                if (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD || _tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER) //should either be 'void' or a type
                 {
                     WriteCurrentToken();
 
@@ -312,7 +312,7 @@ namespace HackCompiler.Modules
                         else
                         {
                             //error: expected (
-                            _tokenizer.RecordError("expected '('");
+                            _tokenizer.RecordError("expected '(' parameterList ')'");
                         }
                     }
                     else
@@ -389,9 +389,67 @@ namespace HackCompiler.Modules
             {
                 //empty parameter list
             }
-            else if (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD)
+            else if (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD || _tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER) //type 
             {
+                WriteCurrentToken();
 
+                _tokenizer.Advance();
+
+                if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER) //varName
+                {
+                    WriteCurrentToken();
+                    _tokenizer.Advance();
+
+                    if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ",")
+                    {
+                        WriteCurrentToken(); //,
+
+                        //need to iterate through and collect all possible parameters...
+                        var hasMore = true;
+
+                        while (hasMore && !_tokenizer.HasErrors)
+                        {
+
+
+                            _tokenizer.Advance();
+
+                            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD || _tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER) //type
+                            {
+                                WriteCurrentToken();
+
+                                _tokenizer.Advance();
+
+                                if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER) //varName
+                                {
+                                    WriteCurrentToken();
+
+                                    _tokenizer.Advance();
+                                }
+
+                                if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ",")
+                                {
+                                    WriteCurrentToken();
+
+
+                                }
+                                else
+                                {
+                                    hasMore = false;
+                                }
+                            }
+                            else
+                            {
+                                _tokenizer.RecordError("expected identifier");
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    _tokenizer.RecordError("expected varName");
+                }
+
+               
             }
             else
             {
