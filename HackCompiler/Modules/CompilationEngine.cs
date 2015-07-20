@@ -20,6 +20,10 @@ namespace HackCompiler.Modules
         private JackTokenizer _tokenizer;
         private StringBuilder _xmlTokens;
         private string[] statements = { "let", "if", "while", "do", "return" };
+        private string[] decTypes = { "static", "field" };
+        private string[] subTypes = { "constructor", "function", "method" };
+
+
 
         public bool HasErrors
         {
@@ -98,25 +102,18 @@ namespace HackCompiler.Modules
                     _tokenizer.Advance();
 
                     //now we determine if we have class variable declarations or subroutine declaration
-                    if (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD)
+                    //looping through the variable declarations first, if there are any.
+                    while (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD && decTypes.Contains(_tokenizer.KeyWord()) && !_tokenizer.HasErrors)
                     {
-                        var keyword = _tokenizer.KeyWord();
-                        if (keyword == "static" || keyword == "field")
-                        {
-                            //classVarDec
-                            CompileClassVarDec();
-                        }
-                        else
-                        {
-                            //subroutineDec
-                            CompileSubroutine();
-                        }
+                        CompileClassVarDec();
                     }
-                    else
+
+                    //looping through the subroutine declarations, if there are any.
+                    while (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD && subTypes.Contains(_tokenizer.KeyWord()) && !_tokenizer.HasErrors)
                     {
-                        //error: expecting class variable declarations or subroutine declaration
-                        _tokenizer.RecordError("expecting class variable declarations or subroutine declaration");
+                        CompileSubroutine();
                     }
+                    
                 }
                 else
                 {
@@ -190,7 +187,84 @@ namespace HackCompiler.Modules
         /// </summary>
         public void CompileClassVarDec()
         {
+            WriteXml("<classVarDec>");
 
+            WriteCurrentToken(); //either field or static
+
+            _tokenizer.Advance();
+
+            //'int' | 'char' | 'boolean' | className
+            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD || _tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
+            {
+                WriteCurrentToken();
+
+                //varName
+                _tokenizer.Advance();
+
+                if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
+                {
+                    WriteCurrentToken();
+
+                    _tokenizer.Advance();
+
+                    if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ",")
+                    {
+                        WriteCurrentToken();
+
+                        //need to iterate through and collect all possible varName identifiers...
+                        var hasMore = true;
+
+                        while (hasMore && !_tokenizer.HasErrors)
+                        {
+                            
+
+                            _tokenizer.Advance();
+
+                            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
+                            {
+                                WriteCurrentToken();
+
+                                _tokenizer.Advance();
+
+                                if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ",")
+                                {
+                                    WriteCurrentToken();
+
+
+                                }
+                                else
+                                {
+                                    hasMore = false;
+                                }
+                            }
+                            else
+                            {
+                                _tokenizer.RecordError("expected identifier");
+                            }
+                        }
+                    }
+                    
+                    if(_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ";")
+                    {
+                        WriteCurrentToken();
+                        _tokenizer.Advance();
+                    }
+                    else
+                    {
+                        _tokenizer.RecordError("expected ';'");
+                    }
+                }
+                else
+                {
+                    _tokenizer.RecordError("expected 'varName' identifier");
+                }
+            }
+            else
+            {
+                _tokenizer.RecordError("expected 'int' | 'char' | 'boolean' | className");
+            }
+
+            WriteXml("</classVarDec>");
         }
 
         /// <summary>
