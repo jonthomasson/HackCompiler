@@ -580,6 +580,8 @@ namespace HackCompiler.Modules
                         if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ")")
                         {
                             WriteCurrentToken();
+
+                            _tokenizer.Advance(); //look ahead
                         }
                         else
                         {
@@ -721,6 +723,16 @@ namespace HackCompiler.Modules
             else
             {
                 CompileExpression();
+                if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ";")
+                {
+                    WriteCurrentToken();
+
+                    _tokenizer.Advance(); //look ahead
+                }
+                else
+                {
+                    _tokenizer.RecordError("expected ';'");
+                }
             }
 
             WriteXml("</returnStatement>");

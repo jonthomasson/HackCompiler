@@ -99,8 +99,12 @@ namespace HackCompiler.Modules
 
         public void RecordError(string error)
         {
-            _currentToken.Error = error;
-            HasErrors = true;
+            if (string.IsNullOrEmpty(_currentToken.Error))
+            {
+                _currentToken.Error = error;
+                HasErrors = true;
+            }
+           
         }
 
         public void ProcessToken(string token)
