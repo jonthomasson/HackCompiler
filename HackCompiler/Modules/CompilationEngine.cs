@@ -362,6 +362,8 @@ namespace HackCompiler.Modules
                 if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "}")
                 {
                     WriteCurrentToken();
+
+                    _tokenizer.Advance();
                 }
                 else
                 {
@@ -743,6 +745,59 @@ namespace HackCompiler.Modules
         /// </summary>
         public void CompileIf()
         {
+            WriteXml("<ifStatement>");
+
+            WriteCurrentToken(); //if
+
+            _tokenizer.Advance();
+
+            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "(")
+            {
+                WriteCurrentToken(); //(
+
+                _tokenizer.Advance();
+
+                CompileExpression();
+
+                if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ")")
+                {
+                    WriteCurrentToken();
+
+                    _tokenizer.Advance();
+
+                    if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "{")
+                    {
+                        WriteCurrentToken();
+
+                        _tokenizer.Advance();
+
+                        CompileStatements();
+
+                        if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "}")
+                        {
+                            WriteCurrentToken();
+
+                            _tokenizer.Advance();
+                        }
+                        else
+                        {
+                            //error: expected }
+                            _tokenizer.RecordError("expected '}'");
+                        }
+                    }
+
+                }
+                else
+                {
+                    _tokenizer.RecordError("expected '(' expression ')'");
+                }
+            }
+            else
+            {
+                _tokenizer.RecordError("expected '(' expression ')'");
+            }
+
+            WriteXml("</ifStatement>");
 
         }
 
@@ -786,7 +841,48 @@ namespace HackCompiler.Modules
         {
             WriteXml("<expressionList>");
 
-            _tokenizer.Advance();
+            _tokenizer.Advance(); 
+
+            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
+            {
+                CompileExpression();
+            }
+
+            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ",")
+            {
+                WriteCurrentToken();
+
+                //need to iterate through and collect all possible varName identifiers...
+                var hasMore = true;
+
+                while (hasMore && !_tokenizer.HasErrors)
+                {
+
+
+                    _tokenizer.Advance();
+
+                    if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
+                    {
+                        CompileExpression();
+
+                        if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ",")
+                        {
+                            WriteCurrentToken();
+
+
+                        }
+                        else
+                        {
+                            hasMore = false;
+                        }
+                    }
+                    else
+                    {
+                        _tokenizer.RecordError("expected identifier");
+                    }
+                }
+            }
+            
             WriteXml("</expressionList>");
 
         }
