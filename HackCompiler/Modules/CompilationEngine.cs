@@ -129,19 +129,15 @@ namespace HackCompiler.Modules
 
             }
 
-            if (_tokenizer.HasMoreTokens)
+
+            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "}")
             {
-                _tokenizer.Advance();
+                WriteCurrentToken();
+            }
+            else
+            {
+                _tokenizer.RecordError("expecting '}' end of class");
 
-                if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "}")
-                {
-                    WriteCurrentToken();
-                }
-                else
-                {
-                    _tokenizer.RecordError("expecting '}'");
-
-                }
             }
 
             WriteXml("</class>"); //</class>
@@ -707,6 +703,59 @@ namespace HackCompiler.Modules
         /// </summary>
         public void CompileWhile()
         {
+            WriteXml("<whileStatement>");
+
+            WriteCurrentToken(); //while
+
+            _tokenizer.Advance();
+
+            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "(")
+            {
+                WriteCurrentToken(); //(
+
+                _tokenizer.Advance();
+
+                CompileExpression();
+
+                if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ")")
+                {
+                    WriteCurrentToken();
+
+                    _tokenizer.Advance();
+
+                    if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "{")
+                    {
+                        WriteCurrentToken();
+
+                        _tokenizer.Advance();
+
+                        CompileStatements();
+
+                        if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "}")
+                        {
+                            WriteCurrentToken();
+
+                            _tokenizer.Advance();
+                        }
+                        else
+                        {
+                            //error: expected }
+                            _tokenizer.RecordError("expected '}'");
+                        }
+                    }
+
+                }
+                else
+                {
+                    _tokenizer.RecordError("expected '(' expression ')'");
+                }
+            }
+            else
+            {
+                _tokenizer.RecordError("expected '(' expression ')'");
+            }
+
+            WriteXml("</whileStatement>");
 
         }
 
