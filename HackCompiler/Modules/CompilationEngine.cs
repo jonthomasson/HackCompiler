@@ -350,7 +350,12 @@ namespace HackCompiler.Modules
                 //check varDec  
                 _tokenizer.Advance();
 
-                if (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD && _tokenizer.KeyWord() == "var")//we have some variable declarations
+                //if (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD && _tokenizer.KeyWord() == "var")//we have some variable declarations
+                //{
+                //    CompileVarDec();
+                //}
+
+                while (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD && _tokenizer.KeyWord() == "var" && !_tokenizer.HasErrors)
                 {
                     CompileVarDec();
                 }
