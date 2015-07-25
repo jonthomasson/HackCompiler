@@ -471,25 +471,106 @@ namespace HackCompiler.Modules
         {
             WriteXml("<varDec>"); //<varDec>
 
-            WriteCurrentToken();
+            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD && _tokenizer.KeyWord() == "var")
+            {
+                WriteCurrentToken();
 
-            _tokenizer.Advance();
+                _tokenizer.Advance();
 
-            WriteCurrentToken();
+                if (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD || _tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
+                {
+                    WriteCurrentToken();
 
-            _tokenizer.Advance();
+                    _tokenizer.Advance();
 
-            WriteCurrentToken();
+                    if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
+                    {
+                        WriteCurrentToken();
 
-            _tokenizer.Advance();
+                        _tokenizer.Advance();
 
-            WriteCurrentToken();
+                       
+                        if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ",")
+                        {
+                            WriteCurrentToken();
+
+                            //need to iterate through and collect all possible varName identifiers...
+                            var hasMore = true;
+
+                            while (hasMore && !_tokenizer.HasErrors)
+                            {
+
+
+                                _tokenizer.Advance();
+
+                                if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
+                                {
+                                    WriteCurrentToken();
+                                    _tokenizer.Advance();
+
+
+                                    if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ",")
+                                    {
+                                        WriteCurrentToken();
+
+
+                                    }
+                                    else
+                                    {
+                                        hasMore = false;
+                                    }
+                                }
+                                else
+                                {
+                                    _tokenizer.RecordError("expected identifier");
+                                }
+                            }
+                        }
+                      
+                    }
+                    else
+                    {
+                        _tokenizer.RecordError("expected 'varName'");
+                    }
+                }
+                else
+                {
+                    _tokenizer.RecordError("expected 'type'");
+                }
+            }
+            else
+            {
+                _tokenizer.RecordError("expected 'var' keyword");
+            }
+            //WriteCurrentToken();
+
+            //_tokenizer.Advance();
+
+            //WriteCurrentToken();
+
+            //_tokenizer.Advance();
+
+            //WriteCurrentToken();
+
+            //_tokenizer.Advance();
+
+            //WriteCurrentToken();
 
             //may need to refactor later to allow for multiple var decs here...
+            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ";")
+            {
+                WriteCurrentToken();
+
+                _tokenizer.Advance();
+            }
+            else
+            {
+                _tokenizer.RecordError("expected ';'");
+            }
 
             WriteXml("</varDec>"); //</varDec> 
 
-            _tokenizer.Advance(); //following lookahead procedure to stay consistent here...
+            //_tokenizer.Advance(); //following lookahead procedure to stay consistent here...
         }
 
         /// <summary>
