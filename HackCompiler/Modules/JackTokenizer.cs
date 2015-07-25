@@ -13,7 +13,7 @@ namespace HackCompiler.Modules
     /// </summary>
     public class JackTokenizer
     {
-        
+
         public string CurrentToken { get; set; }
         public bool HasMoreTokens { get; set; }
         private List<TokenizedObject> _tokens;
@@ -45,48 +45,72 @@ namespace HackCompiler.Modules
             HasErrors = false;
         }
 
-        
+
 
         public void ParseTokens(string inputFile)
         {
             var sr = new System.IO.StreamReader(inputFile);
             var line = "";
-            
+
             var buff = "";
             var isStringConstant = false;
+            var checkComment = 0;
+            
 
             while ((line = sr.ReadLine()) != null)
             {
+                
                 _lineNo++; //increment our line number
                 _charNo = 0; //set charno = 0 for current line
+                checkComment = 0;
+
                 if (!line.TrimStart().StartsWith("/") && !string.IsNullOrWhiteSpace(line) && !line.TrimStart().StartsWith("*"))//skip comments and blank lines
                 {
                     foreach (var part in line)
                     {
                         _charNo++;
-                        if ((string.IsNullOrWhiteSpace(part.ToString()) || Symbols.Contains(part.ToString())) && !isStringConstant)
+
+                        if (part.ToString() == "/")
                         {
-                            //if it is a symbol or space, then need to write out our buffer to a tokenizedObject and clear the buffer
-                            if (buff.Length > 0 && !string.IsNullOrWhiteSpace(buff))
+                            if (checkComment == _charNo - 1)
                             {
-                                ProcessToken(buff); //flush our buffer
+                                //the rest of the line is a comment, so ignore it
+                                
+                                break;
+
                             }
-                            if (Symbols.Contains(part.ToString()))
+                            else
                             {
-                                ProcessToken(part.ToString());
+                                checkComment = _charNo;
                             }
-                            buff = ""; //clear buffer to start reading next token
                         }
                         else
                         {
-                            if (part.ToString().Contains("\""))
+                            if ((string.IsNullOrWhiteSpace(part.ToString()) || Symbols.Contains(part.ToString())) && !isStringConstant)
                             {
-                                isStringConstant = !isStringConstant;
+                                //if it is a symbol or space, then need to write out our buffer to a tokenizedObject and clear the buffer
+                                if (buff.Length > 0 && !string.IsNullOrWhiteSpace(buff))
+                                {
+                                    ProcessToken(buff); //flush our buffer
+                                }
+                                if (Symbols.Contains(part.ToString()))
+                                {
+                                    ProcessToken(part.ToString());
+                                }
+                                buff = ""; //clear buffer to start reading next token
                             }
-                            //write our part to a temp buffer
-                            buff += part;
+                            else
+                            {
+                                if (part.ToString().Contains("\""))
+                                {
+                                    isStringConstant = !isStringConstant;
+                                }
+                                //write our part to a temp buffer
+                                buff += part;
+                            }
                         }
 
+                      
                     }
                 }
 
@@ -104,7 +128,7 @@ namespace HackCompiler.Modules
                 _currentToken.Error = error;
                 HasErrors = true;
             }
-           
+
         }
 
         public void ProcessToken(string token)
@@ -112,7 +136,7 @@ namespace HackCompiler.Modules
             int buff;
             if (Symbols.Contains(token))
             {
-                _tokens.Add(new TokenizedObject { Token = token, Type = Enumerations.TokenType.SYMBOL , CharNo = _charNo, LineNo = _lineNo});
+                _tokens.Add(new TokenizedObject { Token = token, Type = Enumerations.TokenType.SYMBOL, CharNo = _charNo, LineNo = _lineNo });
             }
             else if (Keywords.Contains(token))
             {
@@ -140,8 +164,8 @@ namespace HackCompiler.Modules
         /// </summary>
         public void Advance()
         {
-           // var tokenBuffer = _tokens[_currentTokenIdx];
-            
+            // var tokenBuffer = _tokens[_currentTokenIdx];
+
             HasMoreTokens = _tokens.Count > _currentTokenIdx + 1 ? true : false;
 
             if (HasMoreTokens)
@@ -200,7 +224,7 @@ namespace HackCompiler.Modules
             return (string)_currentToken.Token;
         }
 
-      
+
 
     }
     public class TokenizedObject
