@@ -42,6 +42,7 @@ namespace HackCompiler
 
         private void ReadSourceFile()
         {
+            rtbErrors.Text = "";
             var sourceFile = System.IO.File.ReadAllText(_fileName);
 
             rtbSource.Text = sourceFile;

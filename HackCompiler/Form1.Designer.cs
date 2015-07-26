@@ -57,18 +57,18 @@
             this.tableLayoutPanel1.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Controls.Add(this.rtbErrors, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.frmStatus, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.mnuTools, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.frmStatus, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.rtbErrors, 0, 3);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowCount = 3;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 5.789909F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 94.21009F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 43F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 200F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 43F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(2077, 1255);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
@@ -92,7 +92,7 @@
             this.toolStripButton1.Image = global::HackCompiler.Properties.Resources.folder_open_000000_32;
             this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(36, 55);
+            this.toolStripButton1.Size = new System.Drawing.Size(36, 53);
             this.toolStripButton1.Text = "btnOpenSourceFile";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
@@ -102,7 +102,7 @@
             this.toolStripButton2.Image = global::HackCompiler.Properties.Resources.save_000000_32;
             this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(36, 55);
+            this.toolStripButton2.Size = new System.Drawing.Size(36, 53);
             this.toolStripButton2.Text = "btnSaveDestination";
             this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
             // 
@@ -112,7 +112,7 @@
             this.toolStripButton3.Image = global::HackCompiler.Properties.Resources.play_000000_32;
             this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(36, 55);
+            this.toolStripButton3.Size = new System.Drawing.Size(36, 53);
             this.toolStripButton3.Text = "btnRunAssembler";
             this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
             // 
@@ -219,24 +219,24 @@
             this.frmStatus.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.frmStatus.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblStatus});
-            this.frmStatus.Location = new System.Drawing.Point(1, 1009);
+            this.frmStatus.Location = new System.Drawing.Point(1, 1210);
             this.frmStatus.Name = "frmStatus";
-            this.frmStatus.Size = new System.Drawing.Size(2075, 43);
-            this.frmStatus.TabIndex = 2;
+            this.frmStatus.Size = new System.Drawing.Size(2075, 44);
+            this.frmStatus.TabIndex = 5;
             this.frmStatus.Text = "statusStrip1";
             // 
             // lblStatus
             // 
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(0, 38);
+            this.lblStatus.Size = new System.Drawing.Size(0, 16);
             // 
             // rtbErrors
             // 
             this.rtbErrors.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rtbErrors.Location = new System.Drawing.Point(4, 1056);
+            this.rtbErrors.Location = new System.Drawing.Point(4, 1012);
             this.rtbErrors.Name = "rtbErrors";
-            this.rtbErrors.Size = new System.Drawing.Size(2069, 195);
-            this.rtbErrors.TabIndex = 3;
+            this.rtbErrors.Size = new System.Drawing.Size(2069, 194);
+            this.rtbErrors.TabIndex = 7;
             this.rtbErrors.Text = "";
             // 
             // Form1

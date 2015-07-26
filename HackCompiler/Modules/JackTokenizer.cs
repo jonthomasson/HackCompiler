@@ -78,13 +78,14 @@ namespace HackCompiler.Modules
                             if (checkComment == _charNo - 1)
                             {
                                 //the rest of the line is a comment, so ignore it
-                                
+                                _tokens.Remove(_tokens.Last()); //remove the last token, since it ended up just being a comment
                                 break;
 
                             }
                             else
                             {
                                 checkComment = _charNo;
+                                ProcessToken(part.ToString());
                             }
                         }
                         else
