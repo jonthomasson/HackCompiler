@@ -26,6 +26,7 @@ namespace HackCompiler.Modules
 
         private string[] decTypes = { "static", "field" };
         private string[] subTypes = { "constructor", "function", "method" };
+        private string[] keywordConstants = { "true", "false", "null", "this" };
 
 
 
@@ -77,6 +78,15 @@ namespace HackCompiler.Modules
 
         private void WriteXml(string writeThis)
         {
+           
+            if (writeThis == "<")
+            {
+                writeThis = "&lt;"; //need to do this or we'll have an error when looking at the file in the browser
+            }
+            else if (writeThis == ">")
+            {
+                writeThis = "&gt;"; //need to do this or we'll have an error when looking at the file in the browser
+            }
             _xmlTokens.Append(writeThis + Environment.NewLine);
 
         }
@@ -1008,7 +1018,7 @@ namespace HackCompiler.Modules
         public void CompileTerm()
         {
             WriteXml("<term>");
-            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER || _tokenizer.TokenType == Enums.Enumerations.TokenType.STRING_CONST || _tokenizer.TokenType == Enums.Enumerations.TokenType.INT_CONST)
+            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER || _tokenizer.TokenType == Enums.Enumerations.TokenType.STRING_CONST || _tokenizer.TokenType == Enums.Enumerations.TokenType.INT_CONST || (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD && keywordConstants.Contains(_tokenizer.KeyWord())))
             {
                 //WriteCurrentToken();
 
@@ -1065,9 +1075,9 @@ namespace HackCompiler.Modules
         {
             WriteXml("<expressionList>");
 
-            _tokenizer.Advance(); 
+            _tokenizer.Advance();
 
-            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER || _tokenizer.TokenType == Enums.Enumerations.TokenType.INT_CONST || _tokenizer.TokenType == Enums.Enumerations.TokenType.STRING_CONST)
+            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER || _tokenizer.TokenType == Enums.Enumerations.TokenType.INT_CONST || _tokenizer.TokenType == Enums.Enumerations.TokenType.STRING_CONST || (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD && keywordConstants.Contains(_tokenizer.KeyWord())))
             {
                 CompileExpression();
             }
