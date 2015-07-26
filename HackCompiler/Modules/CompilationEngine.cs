@@ -20,6 +20,8 @@ namespace HackCompiler.Modules
         private JackTokenizer _tokenizer;
         private StringBuilder _xmlTokens;
         private string[] statements = { "let", "if", "while", "do", "return" };
+        private string[] ops = { "+", "-", "*", "/", "&", "<", ">", "=" };
+
         private string[] decTypes = { "static", "field" };
         private string[] subTypes = { "constructor", "function", "method" };
 
@@ -745,7 +747,26 @@ namespace HackCompiler.Modules
 
                 _tokenizer.Advance();
 
-                if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL)
+                if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "["){
+                    WriteCurrentToken();
+
+                    _tokenizer.Advance();
+
+                    CompileExpression();
+
+                    if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "]")
+                    {
+                        WriteCurrentToken();
+
+                        _tokenizer.Advance();
+                    }
+                    else
+                    {
+                        _tokenizer.RecordError("expected ']'");
+                    }
+                } 
+
+                if(_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "=")
                 {
                     WriteCurrentToken();
 
@@ -942,12 +963,35 @@ namespace HackCompiler.Modules
         public void CompileExpression()
         {
             WriteXml("<expression>");
+
+            //todo: need to account for multiple terms here...
+
             CompileTerm();
 
-            //_tokenizer.Advance();
-            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL)
+            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && ops.Contains(_tokenizer.Symbol()))
             {
                 //(op term)*
+                WriteCurrentToken();
+
+                var hasMore = true;
+
+                while (hasMore && !_tokenizer.HasErrors)
+                {
+
+                    _tokenizer.Advance();
+
+                    CompileTerm();
+
+                    if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && ops.Contains(_tokenizer.Symbol()))
+                    {
+                        WriteCurrentToken();
+                      
+                    }
+                    else
+                    {
+                        hasMore = false;
+                    }
+                }
 
             }
             WriteXml("</expression>");
