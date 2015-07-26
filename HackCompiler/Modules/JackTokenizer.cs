@@ -26,6 +26,7 @@ namespace HackCompiler.Modules
         private int _lineNo = 0;
         private int _charNo = 0;
         private TokenizedObject _currentToken;
+        public TokenizedObject NextToken { get; set; }
         public Enumerations.TokenType TokenType { get; set; }
         public string[] Symbols = { "(", ")", "{", "}", "[", "]", ".", ",", ";", "+", "-", "*", "/", "&", "|", "<", ">", "=", "~" };
         public string[] Keywords = { "class", "constructor", "function", "method", "field", "static", "var", "int", "char", "boolean", "void", "true", "false", "null", "this", "let", "do", "if", "else", "while", "return" };
@@ -175,6 +176,9 @@ namespace HackCompiler.Modules
                 CurrentToken = _currentToken.Token;
 
                 _currentTokenIdx++;
+
+
+                NextToken = _tokens[_currentTokenIdx];
             }
         }
 

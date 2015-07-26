@@ -944,7 +944,7 @@ namespace HackCompiler.Modules
             WriteXml("<expression>");
             CompileTerm();
 
-            _tokenizer.Advance();
+            //_tokenizer.Advance();
             if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL)
             {
                 //(op term)*
@@ -962,9 +962,28 @@ namespace HackCompiler.Modules
         public void CompileTerm()
         {
             WriteXml("<term>");
-            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
+            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER || _tokenizer.TokenType == Enums.Enumerations.TokenType.STRING_CONST || _tokenizer.TokenType == Enums.Enumerations.TokenType.INT_CONST)
             {
-                WriteCurrentToken();
+                //WriteCurrentToken();
+
+                //need to distinguish between a variable, an array entry, and a subroutine call.
+                //establish a look ahead token.
+                //_tokenizer.Advance();
+              
+                //subroutine call
+                if (_tokenizer.NextToken.Type == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.NextToken.Token == ".")
+                {
+                   // WriteCurrentToken();
+
+                    CompileSubroutineCall();
+                }
+                else
+                {
+                    WriteCurrentToken();
+
+                    _tokenizer.Advance();
+                }
+                
             }
             WriteXml("</term>");
         }
@@ -978,7 +997,7 @@ namespace HackCompiler.Modules
 
             _tokenizer.Advance(); 
 
-            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
+            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER || _tokenizer.TokenType == Enums.Enumerations.TokenType.INT_CONST || _tokenizer.TokenType == Enums.Enumerations.TokenType.STRING_CONST)
             {
                 CompileExpression();
             }
@@ -996,7 +1015,7 @@ namespace HackCompiler.Modules
 
                     _tokenizer.Advance();
 
-                    if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER)
+                    if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER || _tokenizer.TokenType == Enums.Enumerations.TokenType.INT_CONST || _tokenizer.TokenType == Enums.Enumerations.TokenType.STRING_CONST)
                     {
                         CompileExpression();
 
