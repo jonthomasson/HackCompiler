@@ -126,11 +126,14 @@ namespace HackCompiler.Modules
 
         public void RecordError(string error)
         {
-            if (string.IsNullOrEmpty(_currentToken.Error))
+            if (string.IsNullOrEmpty(_currentToken.Error)) //we want to capture the first error since that'll be the one with the most detail.
             {
-                _currentToken.Error = GetStackTrace(error) + Environment.NewLine;
+                _currentToken.Error = error;
+
                 HasErrors = true;
             }
+
+            _currentToken.StackTrace += "@" + GetStackTrace(error) + Environment.NewLine;
 
         }
 
@@ -141,11 +144,11 @@ namespace HackCompiler.Modules
         {
             StackTrace stackTrace = new StackTrace(true);
             StackFrame sf = stackTrace.GetFrame(2); //using index 2 should give us the calling function, not the current one.
-            var retMessage = "Trace "
-                + sf.GetMethod().Name + " "
+            var retMessage = 
+                sf.GetMethod().Name + " "
                 + sf.GetFileName() + ":"
                 + sf.GetFileLineNumber() + Environment.NewLine
-                + message + Environment.NewLine;
+                + "Error Message: " + message + Environment.NewLine;
 
             return retMessage;
         }
@@ -256,6 +259,7 @@ namespace HackCompiler.Modules
         public int LineNo { get; set; }
         public int CharNo { get; set; }
         public string Error { get; set; }
+        public string StackTrace { get; set; }
 
     }
 }

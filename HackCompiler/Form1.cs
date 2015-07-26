@@ -107,8 +107,9 @@ namespace HackCompiler
                     rtbSource.DeselectAll();
                 }
 
-                lblStatus.Text = "Compilation failed! Error count = " + errorTokens.Count() + ";  line: " + errorTokens.First().LineNo + "; char: " + errorTokens.First().CharNo + "; Error Message: " + errorTokens.First().Error ;
+                lblStatus.Text = "Compilation failed! Error count = " + errorTokens.Count() + ";  line: " + errorTokens.First().LineNo + "; char: " + errorTokens.First().CharNo + "; Error Message: " + errorTokens.First().Error;
                 rtbErrors.Text = "Compilation failed! Error count = " + errorTokens.Count() + ";  line: " + errorTokens.First().LineNo + "; char: " + errorTokens.First().CharNo + "; Error Message: " + errorTokens.First().Error;
+                rtbErrors.Text += Environment.NewLine + "Stack Trace: " +  errorTokens.First().StackTrace;
                 frmStatus.Refresh();
             }
 
