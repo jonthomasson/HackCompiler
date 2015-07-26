@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using HackCompiler.Enums;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
+
 
 namespace HackCompiler.Modules
 {
@@ -126,10 +128,26 @@ namespace HackCompiler.Modules
         {
             if (string.IsNullOrEmpty(_currentToken.Error))
             {
-                _currentToken.Error = error;
+                _currentToken.Error = GetStackTrace(error) + Environment.NewLine;
                 HasErrors = true;
             }
 
+        }
+
+        /// <summary>
+        /// method for getting the current stack trace for error handling/recording
+        /// </summary>
+        public static string GetStackTrace(string message)
+        {
+            StackTrace stackTrace = new StackTrace(true);
+            StackFrame sf = stackTrace.GetFrame(2); //using index 2 should give us the calling function, not the current one.
+            var retMessage = "Trace "
+                + sf.GetMethod().Name + " "
+                + sf.GetFileName() + ":"
+                + sf.GetFileLineNumber() + Environment.NewLine
+                + message + Environment.NewLine;
+
+            return retMessage;
         }
 
         public void ProcessToken(string token)
@@ -238,5 +256,6 @@ namespace HackCompiler.Modules
         public int LineNo { get; set; }
         public int CharNo { get; set; }
         public string Error { get; set; }
+
     }
 }

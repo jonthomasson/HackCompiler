@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.IO;
+//using System.Reflection;
+//using System.Diagnostics;
 
 namespace HackCompiler.Modules
 {
@@ -1053,6 +1055,8 @@ namespace HackCompiler.Modules
             }
             WriteXml("</term>");
         }
+
+        
 
         /// <summary>
         /// Compiles a (possibly empty) comma-separated list of expressions.

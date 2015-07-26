@@ -89,8 +89,8 @@ namespace HackCompiler
                         currentChar = rtbSource.GetCharFromPosition(rtbSource.GetPositionFromCharIndex(currentIndex)).ToString();
                     }
 
-                    rtbSource.Select(rtbSource.GetFirstCharIndexFromLine(errorLine), currentIndex - rtbSource.GetFirstCharIndexFromLine(errorLine));
-                    rtbSource.SelectedText += " error: " + error.Error;
+                    //rtbSource.Select(rtbSource.GetFirstCharIndexFromLine(errorLine), currentIndex - rtbSource.GetFirstCharIndexFromLine(errorLine));
+                    //rtbSource.SelectedText += " error: " + error.Error;
 
                     rtbSource.Select(startIndex, 1);
 
@@ -98,16 +98,17 @@ namespace HackCompiler
                     rtbSource.SelectionColor = System.Drawing.Color.Black;
                     rtbSource.SelectionBackColor = System.Drawing.Color.Red;
 
-                    rtbSource.Select(currentIndex, error.Error.Length + 8);
+                    //rtbSource.Select(currentIndex, error.Error.Length + 8);
 
-                    //Set the selected text fore and background color
-                    rtbSource.SelectionColor = System.Drawing.Color.Black;
-                    rtbSource.SelectionBackColor = System.Drawing.Color.Orange;
+                    ////Set the selected text fore and background color
+                    //rtbSource.SelectionColor = System.Drawing.Color.Black;
+                    //rtbSource.SelectionBackColor = System.Drawing.Color.Orange;
 
                     rtbSource.DeselectAll();
                 }
 
                 lblStatus.Text = "Compilation failed! Error count = " + errorTokens.Count() + ";  line: " + errorTokens.First().LineNo + "; char: " + errorTokens.First().CharNo + "; Error Message: " + errorTokens.First().Error ;
+                rtbErrors.Text = "Compilation failed! Error count = " + errorTokens.Count() + ";  line: " + errorTokens.First().LineNo + "; char: " + errorTokens.First().CharNo + "; Error Message: " + errorTokens.First().Error;
                 frmStatus.Refresh();
             }
 
