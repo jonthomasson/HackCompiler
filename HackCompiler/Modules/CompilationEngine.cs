@@ -1017,9 +1017,31 @@ namespace HackCompiler.Modules
                 //subroutine call
                 if (_tokenizer.NextToken.Type == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.NextToken.Token == ".")
                 {
-                   // WriteCurrentToken();
-
                     CompileSubroutineCall();
+                }
+                else if (_tokenizer.NextToken.Type == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.NextToken.Token == "[")
+                {
+                    //array
+                    WriteCurrentToken(); //varName
+
+                    _tokenizer.Advance();
+
+                    WriteCurrentToken(); //[
+
+                    _tokenizer.Advance();
+
+                    CompileExpression();
+
+                    if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "]")
+                    {
+                        WriteCurrentToken();
+
+                        _tokenizer.Advance();
+                    }
+                    else 
+                    {
+                        _tokenizer.RecordError("expected ']'"); 
+                    }
                 }
                 else
                 {
