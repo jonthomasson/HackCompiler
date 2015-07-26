@@ -1018,7 +1018,7 @@ namespace HackCompiler.Modules
         public void CompileTerm()
         {
             WriteXml("<term>");
-            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER || _tokenizer.TokenType == Enums.Enumerations.TokenType.STRING_CONST || _tokenizer.TokenType == Enums.Enumerations.TokenType.INT_CONST || (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD && keywordConstants.Contains(_tokenizer.KeyWord())))
+            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER || _tokenizer.TokenType == Enums.Enumerations.TokenType.STRING_CONST || _tokenizer.TokenType == Enums.Enumerations.TokenType.INT_CONST || (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD && keywordConstants.Contains(_tokenizer.KeyWord())) || (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "("))
             {
                 //WriteCurrentToken();
 
@@ -1053,6 +1053,26 @@ namespace HackCompiler.Modules
                     else 
                     {
                         _tokenizer.RecordError("expected ']'"); 
+                    }
+                }
+                else if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "(")
+                {
+                    //we have another expression...yay!
+                    WriteCurrentToken(); //(
+
+                    _tokenizer.Advance();
+
+                    CompileExpression();
+
+                    if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == ")")
+                    {
+                        WriteCurrentToken();
+
+                        _tokenizer.Advance();
+                    }
+                    else
+                    {
+                        _tokenizer.RecordError("expected ')'");
                     }
                 }
                 else
