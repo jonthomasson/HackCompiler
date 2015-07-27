@@ -27,6 +27,7 @@ namespace HackCompiler.Modules
         private string[] decTypes = { "static", "field" };
         private string[] subTypes = { "constructor", "function", "method" };
         private string[] keywordConstants = { "true", "false", "null", "this" };
+        private string[] unaryOps = { "~", "-" };
 
 
 
@@ -86,6 +87,10 @@ namespace HackCompiler.Modules
             else if (writeThis == ">")
             {
                 writeThis = "&gt;"; //need to do this or we'll have an error when looking at the file in the browser
+            }
+            else if (writeThis == "&")
+            {
+                writeThis = "&amp;"; //need to do this or we'll have an error when looking at the file in the browser
             }
             _xmlTokens.Append(writeThis + Environment.NewLine);
 
@@ -1075,6 +1080,15 @@ namespace HackCompiler.Modules
                         _tokenizer.RecordError("expected ')'");
                     }
                 }
+                else if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && unaryOps.Contains(_tokenizer.Symbol()))
+                {
+                    //another term
+                    WriteCurrentToken(); //unary op
+
+                    _tokenizer.Advance();
+
+                    CompileTerm();
+                }
                 else
                 {
                     WriteCurrentToken();
@@ -1088,7 +1102,7 @@ namespace HackCompiler.Modules
 
         public bool PreExpressionCheck()
         {
-            return _tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER || _tokenizer.TokenType == Enums.Enumerations.TokenType.STRING_CONST || _tokenizer.TokenType == Enums.Enumerations.TokenType.INT_CONST || (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD && keywordConstants.Contains(_tokenizer.KeyWord()) || (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "("));
+            return _tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER || _tokenizer.TokenType == Enums.Enumerations.TokenType.STRING_CONST || _tokenizer.TokenType == Enums.Enumerations.TokenType.INT_CONST || (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD && keywordConstants.Contains(_tokenizer.KeyWord()) || (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "(") || (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && unaryOps.Contains(_tokenizer.Symbol())));
         }
 
         
