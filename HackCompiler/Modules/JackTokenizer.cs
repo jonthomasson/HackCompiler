@@ -121,7 +121,7 @@ namespace HackCompiler.Modules
 
             }
 
-
+            sr.Close();
 
         }
 

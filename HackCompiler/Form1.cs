@@ -50,9 +50,28 @@ namespace HackCompiler
 
         private void toolStripButton3_Click(object sender, EventArgs e)
         {
+            Compile();
+        }
+
+        private void Compile()
+        {
+            SaveSourceFileChanges();
+
             ReadSourceFile();
 
             AnalyzeFile();
+        }
+
+        //private async void AnalyzeFileAsync()
+        //{
+        //    await Task.Delay(1000);
+
+        //    AnalyzeFile();
+        //}
+
+        private void SaveSourceFileChanges()
+        {
+            rtbSource.SaveFile(_fileName, RichTextBoxStreamType.PlainText);
         }
 
         /// <summary>
@@ -138,9 +157,7 @@ namespace HackCompiler
 
         private void btnRun_Click(object sender, EventArgs e)
         {
-            ReadSourceFile();
-
-            AnalyzeFile();
+            Compile();
         }
     }
 }
