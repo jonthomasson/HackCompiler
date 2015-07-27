@@ -951,7 +951,41 @@ namespace HackCompiler.Modules
                             WriteCurrentToken();
 
                             _tokenizer.Advance();
+
+                            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD && _tokenizer.KeyWord() == "else")
+                            {
+                                //else statement
+                                WriteCurrentToken();//else
+
+                                _tokenizer.Advance();
+
+                                if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "{")
+                                {
+                                    WriteCurrentToken(); //{
+
+                                    _tokenizer.Advance();
+
+                                    CompileStatements();
+
+                                    if (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "}")
+                                    {
+                                        WriteCurrentToken();
+
+                                        _tokenizer.Advance();
+                                    }
+                                    else
+                                    {
+                                        _tokenizer.RecordError("expected '}'");
+                                    }
+
+                                }
+                                else
+                                {
+                                    _tokenizer.RecordError("expected '}'");
+                                }
+                            }
                         }
+                        
                         else
                         {
                             //error: expected }
