@@ -1018,7 +1018,7 @@ namespace HackCompiler.Modules
         public void CompileTerm()
         {
             WriteXml("<term>");
-            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER || _tokenizer.TokenType == Enums.Enumerations.TokenType.STRING_CONST || _tokenizer.TokenType == Enums.Enumerations.TokenType.INT_CONST || (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD && keywordConstants.Contains(_tokenizer.KeyWord())) || (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "("))
+            if (PreExpressionCheck() )
             {
                 //WriteCurrentToken();
 
@@ -1086,6 +1086,11 @@ namespace HackCompiler.Modules
             WriteXml("</term>");
         }
 
+        public bool PreExpressionCheck()
+        {
+            return _tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER || _tokenizer.TokenType == Enums.Enumerations.TokenType.STRING_CONST || _tokenizer.TokenType == Enums.Enumerations.TokenType.INT_CONST || (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD && keywordConstants.Contains(_tokenizer.KeyWord()) || (_tokenizer.TokenType == Enums.Enumerations.TokenType.SYMBOL && _tokenizer.Symbol() == "("));
+        }
+
         
 
         /// <summary>
@@ -1097,7 +1102,7 @@ namespace HackCompiler.Modules
 
             _tokenizer.Advance();
 
-            if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER || _tokenizer.TokenType == Enums.Enumerations.TokenType.INT_CONST || _tokenizer.TokenType == Enums.Enumerations.TokenType.STRING_CONST || (_tokenizer.TokenType == Enums.Enumerations.TokenType.KEYWORD && keywordConstants.Contains(_tokenizer.KeyWord())))
+            if (PreExpressionCheck())
             {
                 CompileExpression();
             }
@@ -1115,7 +1120,7 @@ namespace HackCompiler.Modules
 
                     _tokenizer.Advance();
 
-                    if (_tokenizer.TokenType == Enums.Enumerations.TokenType.IDENTIFIER || _tokenizer.TokenType == Enums.Enumerations.TokenType.INT_CONST || _tokenizer.TokenType == Enums.Enumerations.TokenType.STRING_CONST)
+                    if (PreExpressionCheck())
                     {
                         CompileExpression();
 
