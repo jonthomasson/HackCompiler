@@ -135,5 +135,12 @@ namespace HackCompiler
                 frmStatus.Refresh();
             }
         }
+
+        private void btnRun_Click(object sender, EventArgs e)
+        {
+            ReadSourceFile();
+
+            AnalyzeFile();
+        }
     }
 }

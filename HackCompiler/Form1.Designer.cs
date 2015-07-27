@@ -143,8 +143,8 @@
             this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 2;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.539823F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 96.46017F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel3.Size = new System.Drawing.Size(987, 936);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
@@ -155,16 +155,16 @@
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(3, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(981, 33);
+            this.label1.Size = new System.Drawing.Size(981, 40);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Source";
+            this.label1.Text = "Input";
             // 
             // rtbSource
             // 
             this.rtbSource.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rtbSource.Location = new System.Drawing.Point(3, 36);
+            this.rtbSource.Location = new System.Drawing.Point(3, 43);
             this.rtbSource.Name = "rtbSource";
-            this.rtbSource.Size = new System.Drawing.Size(981, 897);
+            this.rtbSource.Size = new System.Drawing.Size(981, 890);
             this.rtbSource.TabIndex = 1;
             this.rtbSource.Text = "";
             // 
@@ -178,8 +178,8 @@
             this.tableLayoutPanel4.Location = new System.Drawing.Point(1078, 3);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.RowCount = 2;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.788546F));
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 96.21146F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel4.Size = new System.Drawing.Size(988, 936);
             this.tableLayoutPanel4.TabIndex = 1;
             // 
@@ -190,16 +190,16 @@
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(3, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(982, 35);
+            this.label2.Size = new System.Drawing.Size(982, 40);
             this.label2.TabIndex = 0;
-            this.label2.Text = "Destination";
+            this.label2.Text = "Output";
             // 
             // rtbDestination
             // 
             this.rtbDestination.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rtbDestination.Location = new System.Drawing.Point(3, 38);
+            this.rtbDestination.Location = new System.Drawing.Point(3, 43);
             this.rtbDestination.Name = "rtbDestination";
-            this.rtbDestination.Size = new System.Drawing.Size(982, 895);
+            this.rtbDestination.Size = new System.Drawing.Size(982, 890);
             this.rtbDestination.TabIndex = 1;
             this.rtbDestination.Text = "";
             // 
@@ -212,6 +212,7 @@
             this.btnRun.Size = new System.Drawing.Size(76, 936);
             this.btnRun.TabIndex = 2;
             this.btnRun.UseVisualStyleBackColor = true;
+            this.btnRun.Click += new System.EventHandler(this.btnRun_Click);
             // 
             // frmStatus
             // 
